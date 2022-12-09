@@ -8,11 +8,11 @@
             "addons": "https://raw.githubusercontent.com/solfcolin/ios_rule_script/master/QuantumultX/Js_Remote_Cookie.conf"
         },
         {
-            "config": "5 8 * * * https://raw.githubusercontent.com/NobyDa/Script/master/iQIYI-DailyBonus/iQIYI.js, tag=爱奇艺签到, img-url=https://raw.githubusercontent.com/NobyDa/mini/master/Color/iQIYI.png",
+            "config": "5 8 * * * https://raw.githubusercontent.com/NobyDa/Script/master/iQIYI-DailyBonus/iQIYI.js, tag=爱奇艺签到, img-url=https://raw.githubusercontent.com/NobyDa/mini/master/Color/iQIYI.png, enabled=true",
             "addons": "https://raw.githubusercontent.com/NobyDa/Script/master/QuantumultX/Js_Remote_Cookie.conf, tag=NobyDa Cookie获取"
         },
         {
-            "config": "3 0 * * * https://raw.githubusercontent.com/chavyleung/scripts/master/meituan/meituan.js, tag=美团签到"
+            "config": "3 0 * * * https://raw.githubusercontent.com/chavyleung/scripts/master/meituan/meituan.js, tag=美团签到,img-url=https://raw.githubusercontent.com/solfcolin/ios_rule_script/master/icon/meituan.png, enabled=true"
         },
         {
             "config": "1 7-21/2 * * * https://raw.githubusercontent.com/shufflewzc/faker2/main/jd_plantBean.js, tag=京东种豆得豆, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jdzd.png, enabled=true"
