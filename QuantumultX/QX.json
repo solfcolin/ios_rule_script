@@ -1,10 +1,16 @@
 {
-    "name": "task gallery",
-    "description": "",
+    "id": "solfcolin.app.sub",
+    "name": "solfcolin 脚本订阅",
+    "description": "该订阅兼容BoxJs以及QX Gallery",
+    "author": "@solfcolin",
     "task": [
         {
-            "config": "5 0 * * * https://raw.githubusercontent.com/NobyDa/Script/master/JD-DailyBonus/JD_DailyBonus.js, tag=京东多合一签到, img-url=https://raw.githubusercontent.com/NobyDa/mini/master/Color/jd.png,enabled=true",
+            "config": "5 0 * * * https://raw.githubusercontent.com/NobyDa/Script/master/JD-DailyBonus/JD_DailyBonus.js, tag=京东签到, img-url=https://raw.githubusercontent.com/NobyDa/mini/master/Color/jd.png,enabled=true",
             "addons": "https://raw.githubusercontent.com/solfcolin/ios_rule_script/master/QuantumultX/Js_Remote_Cookie.conf"
+        },
+        {
+            "config": "5 8 * * * https://raw.githubusercontent.com/NobyDa/Script/master/iQIYI-DailyBonus/iQIYI.js, tag=爱奇艺签到, img-url=https://raw.githubusercontent.com/NobyDa/mini/master/Color/iQIYI.png",
+            "addons": "https://raw.githubusercontent.com/NobyDa/Script/master/QuantumultX/Js_Remote_Cookie.conf, tag=NobyDa Cookie获取"
         }
     ]
 }
