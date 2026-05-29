@@ -3,7 +3,6 @@
 #！desc=https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever?tab=readme-ov-file
 
 [Rule]
-# 爱奇艺 PPS（可能有多余项）
 DOMAIN-SUFFIX,ad.m.iqiyi.com,Reject
 DOMAIN-SUFFIX,afp.iqiyi.com,Reject
 DOMAIN-SUFFIX,api.cupid.iqiyi.com,Reject
