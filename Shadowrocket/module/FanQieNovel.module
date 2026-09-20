@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.9
+#!desc=番茄小说广告屏蔽, version = 3.12
 
 [Rule]
 # ── 关键词 ──
@@ -23,8 +23,10 @@ DOMAIN-SUFFIX,p6-novel-sign.byteimg.com,REJECT
 DOMAIN-SUFFIX,p9-novel-sign.byteimg.com,REJECT
 DOMAIN-SUFFIX,p9-reading-sign.fqnovelpic.com,REJECT
 DOMAIN-SUFFIX,p3-aio.ecombdimg.com,REJECT
+DOMAIN-SUFFIX,p9-aio.ecombdimg.com,REJECT
 DOMAIN-SUFFIX,p3-ecom-qualification-sign.ecombdimg.com,REJECT-DICT
 DOMAIN-SUFFIX,p26-item.ecombdimg.com,REJECT
+DOMAIN,lf-normal-gr-sourcecdn.bytegecko.com,REJECT
 
 # ── 域名后缀：小说 / 视频 App 侧接口 ──
 DOMAIN-SUFFIX,v5-novelapp.fqnovelvod.com,REJECT
@@ -64,6 +66,7 @@ DOMAIN,v6-novelapp.ixigua.com,REJECT
 DOMAIN,msync-im1-vip6-std.easemob.com,REJECT
 DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net,REJECT
 DOMAIN,api.iegadp.qq.com,REJECT
+DOMAIN,fmy420-01-gyf.bj.bilivideo.com,REJECT
 
 # ── IP ──
 IP-CIDR,49.71.37.101/32,REJECT,no-resolve
