@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.8
+#!desc=番茄小说广告屏蔽, version = 3.9
 
 [Rule]
 # ── 关键词 ──
@@ -13,6 +13,7 @@ DOMAIN-SUFFIX,p26-orange-sign.byteimg.com,REJECT-DICT
 # ── 域名后缀：广告素材 / 图片 CDN ──
 DOMAIN-SUFFIX,p3.douyinpic.com,REJECT-DICT
 DOMAIN-SUFFIX,p3-sign.douyinpic.com,REJECT-DICT
+DOMAIN-SUFFIX,p3-webcast-sign.douyinpic.com,REJECT-DICT
 DOMAIN-SUFFIX,p11.douyinpic.com,REJECT
 DOMAIN-SUFFIX,p11-webcast-sign.douyinpic.com,REJECT-DICT
 DOMAIN-SUFFIX,p26.douyinpic.com,REJECT
@@ -20,6 +21,7 @@ DOMAIN-SUFFIX,p3-novel.byteimg.com,REJECT
 DOMAIN-SUFFIX,p6-novel.byteimg.com,REJECT
 DOMAIN-SUFFIX,p6-novel-sign.byteimg.com,REJECT
 DOMAIN-SUFFIX,p9-novel-sign.byteimg.com,REJECT
+DOMAIN-SUFFIX,p9-reading-sign.fqnovelpic.com,REJECT
 DOMAIN-SUFFIX,p3-aio.ecombdimg.com,REJECT
 DOMAIN-SUFFIX,p3-ecom-qualification-sign.ecombdimg.com,REJECT-DICT
 DOMAIN-SUFFIX,p26-item.ecombdimg.com,REJECT
