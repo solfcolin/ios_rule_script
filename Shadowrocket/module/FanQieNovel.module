@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.3
+#!desc=番茄小说广告屏蔽, version = 3.7
 
 [Rule]
 # ── 关键词 ──
@@ -12,10 +12,14 @@ DOMAIN-SUFFIX,p26-orange-sign.byteimg.com,REJECT-DICT
 
 # ── 域名后缀：广告素材 / 图片 CDN ──
 DOMAIN-SUFFIX,p3.douyinpic.com,REJECT-DICT
+DOMAIN-SUFFIX,p3-sign.douyinpic.com,REJECT-DICT
 DOMAIN-SUFFIX,p11.douyinpic.com,REJECT
 DOMAIN-SUFFIX,p11-webcast-sign.douyinpic.com,REJECT-DICT
+DOMAIN-SUFFIX,p26.douyinpic.com,REJECT
 DOMAIN-SUFFIX,p3-novel.byteimg.com,REJECT
 DOMAIN-SUFFIX,p6-novel.byteimg.com,REJECT
+DOMAIN-SUFFIX,p6-novel-sign.byteimg.com,REJECT
+DOMAIN-SUFFIX,p9-novel-sign.byteimg.com,REJECT
 DOMAIN-SUFFIX,p3-aio.ecombdimg.com,REJECT
 DOMAIN-SUFFIX,p3-ecom-qualification-sign.ecombdimg.com,REJECT-DICT
 DOMAIN-SUFFIX,p26-item.ecombdimg.com,REJECT
@@ -37,6 +41,7 @@ DOMAIN,p9-ad-sign.byteimg.com,REJECT
 DOMAIN,sf3-ttcdn-tos.pstatp.com,REJECT
 DOMAIN,dig.bdurl.net,REJECT
 DOMAIN,activity-ag.awemeughun.com,REJECT
+DOMAIN,ads3-normal-hl.zijieapi.com,REJECT
 
 # ── 精确域名：头条 / 抖音 SDK ──
 DOMAIN,i.snssdk.com,REJECT
