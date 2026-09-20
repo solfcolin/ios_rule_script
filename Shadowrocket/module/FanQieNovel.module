@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.7
+#!desc=番茄小说广告屏蔽, version = 3.8
 
 [Rule]
 # ── 关键词 ──
@@ -27,6 +27,8 @@ DOMAIN-SUFFIX,p26-item.ecombdimg.com,REJECT
 # ── 域名后缀：小说 / 视频 App 侧接口 ──
 DOMAIN-SUFFIX,v5-novelapp.fqnovelvod.com,REJECT
 DOMAIN-SUFFIX,v11-novelapp.fqnovelvod.com,REJECT
+DOMAIN-SUFFIX,v5-bd-daily-reading-ad.qznovelvod.com,REJECT
+DOMAIN-SUFFIX,v9-reading-ad.qznovelvod.com,REJECT
 DOMAIN-SUFFIX,mon11-misc-hl.fqnovel.com,REJECT
 DOMAIN-SUFFIX,xpis-tel-xcdn.youku.com,REJECT-DICT
 DOMAIN-SUFFIX,vc-brain-v6.ndcpp.com,REJECT
