@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.15
+#!desc=番茄小说广告屏蔽, version = 3.16
 
 [Rule]
 # ── 关键词 ──
@@ -33,6 +33,7 @@ DOMAIN,lf-normal-login-sourcecdn.bytegecko.com,REJECT
 DOMAIN-SUFFIX,v5-novelapp.fqnovelvod.com,REJECT
 DOMAIN-SUFFIX,v11-novelapp.fqnovelvod.com,REJECT
 DOMAIN-SUFFIX,v26-novelapp.fqnovelvod.com,REJECT
+DOMAIN-SUFFIX,v95-zjjx2tc-novelapp.fqnovelvod.com,REJECT
 DOMAIN-SUFFIX,v5-bd-daily-reading-ad.qznovelvod.com,REJECT
 DOMAIN-SUFFIX,v9-reading-ad.qznovelvod.com,REJECT
 DOMAIN-SUFFIX,mon11-misc-hl.fqnovel.com,REJECT
