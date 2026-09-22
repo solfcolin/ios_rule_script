@@ -1,9 +1,9 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.17
+#!desc=番茄小说广告屏蔽, version = 3.18
 
 [Rule]
 # ── 关键词 ──
-# DOMAIN-KEYWORD,zijieapi,REJECT
+DOMAIN-KEYWORD,zijieapi,REJECT
 
 # ── 域名后缀：广告投放与统计上报 ──
 DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
@@ -35,6 +35,7 @@ DOMAIN-SUFFIX,v11-novelapp.fqnovelvod.com,REJECT
 DOMAIN-SUFFIX,v26-novelapp.fqnovelvod.com,REJECT
 DOMAIN-SUFFIX,v95-zjjx2tc-novelapp.fqnovelvod.com,REJECT
 DOMAIN-SUFFIX,v95-se-zjwztc-novelapp.fqnovelvod.com,REJECT
+DOMAIN-SUFFIX,v5-se-ex-mc-novelapp.fqnovelvod.com,REJECT
 DOMAIN-SUFFIX,v5-bd-daily-reading-ad.qznovelvod.com,REJECT
 DOMAIN-SUFFIX,v9-reading-ad.qznovelvod.com,REJECT
 DOMAIN-SUFFIX,mon11-misc-hl.fqnovel.com,REJECT
