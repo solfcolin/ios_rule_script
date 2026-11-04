@@ -1,0 +1,85 @@
+# 番茄小说 @zqzess
+# 对应小火箭模块：Shadowrocket/module/FanQieNovel.module
+# 用法：Quantumult X「分流」-> 「引用规则」，作为 filter_remote 引入，REJECT 走 REJECT 策略组。
+#
+# 与模块的差异：
+# - REJECT-200 / REJECT-DICT 在圈X 无对应策略，统一降为 REJECT（空数据 vs 请求失败，需真机验开屏与封面）。
+# - 共用 CDN 上的广告素材（byteimg/douyinpic/ecombdimg 等）本文件按域名只拦「广告专用命名」节点，
+#   其余靠 FanQieNovel.conf（rewrite_remote）按路径拦截，避免整域 REJECT 误伤正常封面/头像。
+
+# ── 广告投放与统计上报 ──
+DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
+# 原 REJECT-200
+DOMAIN-SUFFIX,p3-ad-sign.byteimg.com,REJECT
+# 原 REJECT-DICT
+DOMAIN-SUFFIX,p26-orange-sign.byteimg.com,REJECT
+
+# ── 番茄小说专属节点（抖音不使用，可安全整域拒绝）──
+DOMAIN-SUFFIX,p3-novel.byteimg.com,REJECT
+DOMAIN-SUFFIX,p6-novel.byteimg.com,REJECT
+DOMAIN-SUFFIX,p6-novel-sign.byteimg.com,REJECT
+DOMAIN-SUFFIX,p9-novel-sign.byteimg.com,REJECT
+DOMAIN-SUFFIX,p9-reading-sign.fqnovelpic.com,REJECT
+
+DOMAIN,lf-normal-gr-sourcecdn.bytegecko.com,REJECT
+DOMAIN,lf-normal-login-sourcecdn.bytegecko.com,REJECT
+
+# ── 小说 / 视频 App 侧接口 ──
+DOMAIN-SUFFIX,v5-novelapp.fqnovelvod.com,REJECT
+DOMAIN-SUFFIX,v11-novelapp.fqnovelvod.com,REJECT
+DOMAIN-SUFFIX,v26-novelapp.fqnovelvod.com,REJECT
+DOMAIN-SUFFIX,v95-zjjx2tc-novelapp.fqnovelvod.com,REJECT
+DOMAIN-SUFFIX,v95-se-zjwztc-novelapp.fqnovelvod.com,REJECT
+DOMAIN-SUFFIX,v5-se-ex-mc-novelapp.fqnovelvod.com,REJECT
+DOMAIN-SUFFIX,v5-bd-daily-reading-ad.qznovelvod.com,REJECT
+DOMAIN-SUFFIX,v9-reading-ad.qznovelvod.com,REJECT
+DOMAIN-SUFFIX,mon11-misc-hl.fqnovel.com,REJECT
+# 原 REJECT-DICT
+DOMAIN-SUFFIX,xpis-tel-xcdn.youku.com,REJECT
+DOMAIN-SUFFIX,vc-brain-v6.ndcpp.com,REJECT
+
+# ── 字节广告跳转域名 ──
+DOMAIN-SUFFIX,byteorge.com,REJECT
+DOMAIN-SUFFIX,bytegoofy.com,REJECT
+
+# ── 穿山甲 / 巨量引擎（精确域名）──
+DOMAIN,p6-ad-sign.byteimg.com,REJECT
+DOMAIN,p9-ad-sign.byteimg.com,REJECT
+DOMAIN,sf3-ttcdn-tos.pstatp.com,REJECT
+DOMAIN,dig.bdurl.net,REJECT
+DOMAIN,activity-ag.awemeughun.com,REJECT
+
+# ── zijieapi 广告投放接口（仅 ad 主机族，勿用整域关键词，会打断抖音 feed/登录）──
+DOMAIN-SUFFIX,ads3-normal-hl.zijieapi.com,REJECT
+DOMAIN-SUFFIX,ads3-normal-lf.zijieapi.com,REJECT
+DOMAIN-SUFFIX,ads3-normal-lq.zijieapi.com,REJECT
+DOMAIN-SUFFIX,ads5-normal-hl.zijieapi.com,REJECT
+DOMAIN-SUFFIX,ads5-normal-lf.zijieapi.com,REJECT
+DOMAIN-SUFFIX,ads5-normal-lq.zijieapi.com,REJECT
+
+# ── 头条 / 抖音 SDK（精确域名）──
+DOMAIN,i.snssdk.com,REJECT
+DOMAIN,i-lq.snssdk.com,REJECT
+DOMAIN,mcs.snssdk.com,REJECT
+DOMAIN,is.snssdk.com,REJECT
+DOMAIN,security-lq.snssdk.com,REJECT
+DOMAIN,tnc3-alisc1.snssdk.com,REJECT
+DOMAIN,tnc3-aliec2.snssdk.com,REJECT
+
+# ── 西瓜视频（精确域名）──
+DOMAIN,default.ixigua.com,REJECT
+DOMAIN,v6-novelapp.ixigua.com,REJECT
+
+# ── 第三方 ──
+DOMAIN,msync-im1-vip6-std.easemob.com,REJECT
+DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net,REJECT
+DOMAIN,api.iegadp.qq.com,REJECT
+DOMAIN,fmy420-01-gyf.bj.bilivideo.com,REJECT
+
+# ── IP ──
+IP-CIDR,49.71.37.101/32,REJECT
+IP-CIDR,101.36.166.16/32,REJECT
+IP-CIDR,117.71.105.23/32,REJECT
+IP-CIDR,117.92.229.188/32,REJECT
+IP-CIDR,180.96.2.114/32,REJECT
+IP-CIDR,218.94.207.205/32,REJECT

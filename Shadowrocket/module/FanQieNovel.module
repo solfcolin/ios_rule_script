@@ -114,11 +114,18 @@ URL-REGEX,^https?:\/\/[^\/]+\.byteimg\.com\/web\.business\.image,REJECT
 # 头条 / 抖音
 ^https?:\/\/gurd\.snssdk\.com\/src\/server\/v3\/package _ reject
 ^https?:\/\/.+\.pstatp\.com\/obj\/mosaic-legacy\/.+\?from\=ad _ reject
-^https?:\/\/.+\.pstatp\.com\/bytecom\/resource\/track_log\/src\/.+ _ reject
-^https?:\/\/.+\.snssdk\.com\/video\/play\/1\/toutiao\/.+\/mp4 _ reject
-^https?:\/\/.+\.snssdk\.com\/api\/ad\/.+ _ reject
+# 以下三条均为「死规则」：snssdk / pstatp 的路径型规则必须先被 [MITM] hostname 覆盖才能命中，
+# 否则内核看不到 HTTPS 的路径，永不生效也不报错。其中 pstatp 那条已被上面第 108 行按通用形式包含。
+# 故意不为 snssdk 扩大 MITM：域名级 REJECT（见 [Rule] 的 snssdk 精确域名）在 SNI 层即可拦截，不依赖 MITM；
+# 把 +.snssdk.com 做全局 MITM 会把抖音大量接口卷入解密，触发证书校验（pinning）报错并拖慢 feed。
+# 真要启用，请先在 [MITM] hostname 精确加入对应子域，再逐条核对日志命中。
+# ^https?:\/\/.+\.pstatp\.com\/bytecom\/resource\/track_log\/src\/.+ _ reject
+# ^https?:\/\/.+\.snssdk\.com\/video\/play\/1\/toutiao\/.+\/mp4 _ reject
+# ^https?:\/\/.+\.snssdk\.com\/api\/ad\/.+ _ reject
 
 # 图片
+# 路径格式较旧（-jpeg.jpeg 后缀）；字节当前封面多形如 tos-cn-i-1yzifmftcy/<hash>~noop.jpeg，可能已对不上。
+# 需要用圈X/小火箭抓一条真实封面或广告 URL 后再改写，不要凭猜测扩写成更宽的正则。
 ^https?:\/\/.+\.byteimg\.com\/tos-cn-i-1yzifmftcy\/(.+)-jpeg\.jpeg _ reject
 
 [MITM]
