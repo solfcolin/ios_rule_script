@@ -9,17 +9,23 @@
 
 # ── 广告投放与统计上报 ──
 DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
-# 原 REJECT-200
-DOMAIN-SUFFIX,p3-ad-sign.byteimg.com,REJECT
+# 原 REJECT-200；圈X 的 DOMAIN-SUFFIX 疑似未命中，改精确 DOMAIN 绕开
+DOMAIN,p3-ad-sign.byteimg.com,REJECT
 # 原 REJECT-DICT
 DOMAIN-SUFFIX,p26-orange-sign.byteimg.com,REJECT
 
-# ── 番茄小说专属节点（抖音不使用，可安全整域拒绝）──
-DOMAIN-SUFFIX,p3-novel.byteimg.com,REJECT
-DOMAIN-SUFFIX,p6-novel.byteimg.com,REJECT
+# ── 番茄小说专属节点（抖音不使用，可安全整域拒绝；用精确 DOMAIN 规避圈X 的 DOMAIN-SUFFIX 疑似失效）──
+DOMAIN,p3-novel.byteimg.com,REJECT
+DOMAIN,p6-novel.byteimg.com,REJECT
 DOMAIN-SUFFIX,p6-novel-sign.byteimg.com,REJECT
 DOMAIN-SUFFIX,p9-novel-sign.byteimg.com,REJECT
 DOMAIN-SUFFIX,p9-reading-sign.fqnovelpic.com,REJECT
+
+# ── 真机确认的广告节点（具体主机，非整域；douyinpic/ecombdimg 同族其它节点不受影响）──
+DOMAIN,p3.douyinpic.com,REJECT
+DOMAIN,p11.douyinpic.com,REJECT
+DOMAIN,p3-aio.ecombdimg.com,REJECT
+DOMAIN,p26-item.ecombdimg.com,REJECT
 
 DOMAIN,lf-normal-gr-sourcecdn.bytegecko.com,REJECT
 DOMAIN,lf-normal-login-sourcecdn.bytegecko.com,REJECT
