@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.23
+#!desc=番茄小说广告屏蔽, version = 3.24
 
 [Rule]
 # ── 关键词 ──
@@ -28,6 +28,8 @@ DOMAIN-SUFFIX,p6-novel.byteimg.com,REJECT
 DOMAIN-SUFFIX,p6-novel-sign.byteimg.com,REJECT
 DOMAIN-SUFFIX,p9-novel-sign.byteimg.com,REJECT
 DOMAIN-SUFFIX,p9-reading-sign.fqnovelpic.com,REJECT
+# 11:48 日志：p3-luckycat.byteimg.com 走 GEOIP,CN,DIRECT 放行，byteimg 广告素材节点（p3- 前缀），补拦
+DOMAIN-SUFFIX,p3-luckycat.byteimg.com,REJECT
 # ecombdimg 为抖音电商商品图节点，同样改按广告路径拒绝
 # B 方案（临时）：真机日志确认广告图来自以下节点，先整域 REJECT 压广告；不误伤待验证，后续再讨论 A（MITM+路径）。
 DOMAIN-SUFFIX,p3-aio.ecombdimg.com,REJECT
