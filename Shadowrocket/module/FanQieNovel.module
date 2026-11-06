@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.25
+#!desc=番茄小说广告屏蔽, version = 3.26
 
 [Rule]
 # ── 关键词 ──
@@ -30,6 +30,8 @@ DOMAIN-SUFFIX,p9-novel-sign.byteimg.com,REJECT
 DOMAIN-SUFFIX,p9-reading-sign.fqnovelpic.com,REJECT
 # 13:42 日志：p3-reading-sign.fqnovelpic.com 走 PROXY 放行 327 次，疑似广告图源；临时整域 REJECT 测试（可能误伤正常章节插图，待验证）
 DOMAIN-SUFFIX,p3-reading-sign.fqnovelpic.com,REJECT
+# 15:31-15:35 日志：lf3-reading.fqnovelpic.com 每分钟规律放行一次（GEOIP,CN,DIRECT），与 p3-reading-sign 同族，疑似广告图源接手；临时整域 REJECT 测试
+DOMAIN-SUFFIX,lf3-reading.fqnovelpic.com,REJECT
 # 11:48 日志：p3-luckycat.byteimg.com 走 GEOIP,CN,DIRECT 放行，byteimg 广告素材节点（p3- 前缀），补拦
 DOMAIN-SUFFIX,p3-luckycat.byteimg.com,REJECT
 # ecombdimg 为抖音电商商品图节点，同样改按广告路径拒绝
