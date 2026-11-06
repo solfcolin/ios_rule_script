@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.29
+#!desc=番茄小说广告屏蔽, version = 3.30
 
 [Rule]
 # ── 关键词 ──
@@ -106,6 +106,10 @@ DOMAIN,msync-im1-vip6-std.easemob.com,REJECT
 DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net,REJECT
 DOMAIN,api.iegadp.qq.com,REJECT
 DOMAIN,fmy420-01-gyf.bj.bilivideo.com,REJECT
+# 17:24 日志：adgw-rr2.alipay.com 放行，支付宝广告网关（adgw=ad gateway），用户确认拦截；仅影响广告，不影响支付接口
+DOMAIN,adgw-rr2.alipay.com,REJECT
+# 17:30 日志：praisewindow-sinfonlineb.ugsdk.cn 放行，优视 UGSdk 广告 SDK，用户确认拦截
+DOMAIN,praisewindow-sinfonlineb.ugsdk.cn,REJECT
 
 # ── IP ──
 IP-CIDR,49.71.37.101/32,REJECT,no-resolve
