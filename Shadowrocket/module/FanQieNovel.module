@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.30
+#!desc=番茄小说广告屏蔽, version = 3.31
 
 [Rule]
 # ── 关键词 ──
@@ -110,6 +110,10 @@ DOMAIN,fmy420-01-gyf.bj.bilivideo.com,REJECT
 DOMAIN,adgw-rr2.alipay.com,REJECT
 # 17:30 日志：praisewindow-sinfonlineb.ugsdk.cn 放行，优视 UGSdk 广告 SDK，用户确认拦截
 DOMAIN,praisewindow-sinfonlineb.ugsdk.cn,REJECT
+# 17:47 日志：www.chengzijianzhan.com 放行，橙子建站（字节广告落地页），连续两次出现，用户确认拦截
+DOMAIN,www.chengzijianzhan.com,REJECT
+# 17:47 日志：g.cn.miaozhen.com 放行，秒针广告监测（效果统计），连续两次出现，用户确认拦截
+DOMAIN,g.cn.miaozhen.com,REJECT
 
 # ── IP ──
 IP-CIDR,49.71.37.101/32,REJECT,no-resolve
