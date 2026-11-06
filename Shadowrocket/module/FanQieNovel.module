@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.27
+#!desc=番茄小说广告屏蔽, version = 3.28
 
 [Rule]
 # ── 关键词 ──
@@ -80,6 +80,11 @@ DOMAIN-SUFFIX,ads3-normal-lq.zijieapi.com,REJECT
 DOMAIN-SUFFIX,ads5-normal-hl.zijieapi.com,REJECT
 DOMAIN-SUFFIX,ads5-normal-lf.zijieapi.com,REJECT
 DOMAIN-SUFFIX,ads5-normal-lq.zijieapi.com,REJECT
+# 15:54 日志：ma.zijieapi.com / saveu5-normal-hl.zijieapi.com 走 GEOIP,CN,DIRECT 放行。
+# 属字节公共接口（设备风控/安全上报），整域拒绝会打断抖音等 App；应用户实测要求先精确拦这两个主机名，
+# 若番茄登录/阅读/风控异常请移除，广告是否消失以真机为准。
+DOMAIN,ma.zijieapi.com,REJECT
+DOMAIN,saveu5-normal-hl.zijieapi.com,REJECT
 
 # ── 精确域名：头条 / 抖音 SDK ──
 DOMAIN,i.snssdk.com,REJECT
