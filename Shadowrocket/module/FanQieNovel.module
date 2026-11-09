@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.32
+#!desc=番茄小说广告屏蔽, version = 3.33
 
 [Rule]
 # ── 关键词 ──
@@ -75,6 +75,12 @@ DOMAIN,p9-ad-sign.byteimg.com,REJECT
 DOMAIN,sf3-ttcdn-tos.pstatp.com,REJECT
 DOMAIN,dig.bdurl.net,REJECT
 DOMAIN,activity-ag.awemeughun.com,REJECT
+# 参照 w37fhy/QuantumultX Rules/Advertising.list 补充（穿山甲 SDK 变体 + 头条广告投放接口）
+DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT
+DOMAIN,ad.toutiao.com,REJECT
+DOMAIN,dsp.toutiao.com,REJECT
+# 秒针广告监测：w37fhy 为整域，升级为 DOMAIN-SUFFIX（原 g.cn 单主机规则下方已保留，可删）
+DOMAIN-SUFFIX,miaozhen.com,REJECT
 
 # ── 域名后缀：zijieapi 广告投放接口（仅 ad 主机族，勿用整域关键词） ──
 DOMAIN-SUFFIX,ads3-normal-hl.zijieapi.com,REJECT
@@ -113,8 +119,6 @@ DOMAIN,adgw-rr2.alipay.com,REJECT
 DOMAIN,praisewindow-sinfonlineb.ugsdk.cn,REJECT
 # 17:47 日志：www.chengzijianzhan.com 放行，橙子建站（字节广告落地页），连续两次出现，用户确认拦截
 DOMAIN,www.chengzijianzhan.com,REJECT
-# 17:47 日志：g.cn.miaozhen.com 放行，秒针广告监测（效果统计），连续两次出现，用户确认拦截
-DOMAIN,g.cn.miaozhen.com,REJECT
 
 # ── IP ──
 IP-CIDR,49.71.37.101/32,REJECT,no-resolve
