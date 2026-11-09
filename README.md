@@ -18,3 +18,10 @@
 ## 规则
 
 **我们并不生产规则，我们只是开源规则的搬运工。**
+
+### 规则来源
+
+| 文件 | 来源 |
+|---|---|
+| `QuantumultX/AIQIYI.module` | [Johnshall/Shadowrocket-ADBlock-Rules-Forever](https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever) |
+| `QuantumultX/Js_Remote_Cookie.conf` | [NobyDa/Script](https://github.com/NobyDa/Script) / [w37fhy/QuantumultX](https://github.com/w37fhy/QuantumultX) |

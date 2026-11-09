@@ -1,11 +1,12 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.31
+#!desc=番茄小说广告屏蔽, version = 3.32
 
 [Rule]
 # ── 关键词 ──
-# 不可放开 *.zijieapi.com 关键词：该域是字节系公共接口（mssdk 签名 / verify / vcs / mon 日志），
-# 屏蔽后会连带打断抖音等 App 的正常请求。广告投放接口改下方 DOMAIN-SUFFIX 精确覆盖。
-# DOMAIN-KEYWORD,zijieapi,REJECT
+# 3.32（用户决策）：整域屏蔽 *.zijieapi.com。该域承载字节系公共接口（mssdk 签名 / verify / vcs / mon 日志 / 设备风控），
+# 屏蔽会影响本机所有字节系 App（抖音 / 头条 / 西瓜 / 剪映等）的 feed 与登录，不只番茄小说。
+# 若这些 App 出现异常，删除下一行即可回退到按主机族精确拦截（见下方 ads3/ads5 规则）。
+DOMAIN-SUFFIX,zijieapi.com,REJECT
 
 # ── 域名后缀：广告投放与统计上报 ──
 DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
