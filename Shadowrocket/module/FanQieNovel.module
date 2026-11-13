@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.35
+#!desc=番茄小说广告屏蔽, version = 3.36
 
 [Rule]
 # ── 关键词 ──
@@ -81,6 +81,8 @@ DOMAIN,dig.bdurl.net,REJECT
 DOMAIN,activity-ag.awemeughun.com,REJECT
 # 参照 w37fhy/QuantumultX Rules/Advertising.list 补充（穿山甲 SDK 变体 + 头条广告投放接口）
 DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT
+# 3.36：补 pangolin-sdk-toutiao.com 整域（对齐 Clash 基础集；模块原先仅按 URL Rewrite 拦 ad API 路径，现整域 REJECT，下方 pangolin URL Rewrite 不再可达，保留作记录）
+DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
 DOMAIN,ad.toutiao.com,REJECT
 DOMAIN,dsp.toutiao.com,REJECT
 # 秒针广告监测：w37fhy 为整域，升级为 DOMAIN-SUFFIX（原 g.cn 单主机规则下方已保留，可删）
@@ -107,9 +109,12 @@ DOMAIN,is.snssdk.com,REJECT
 DOMAIN,security-lq.snssdk.com,REJECT
 DOMAIN,tnc3-alisc1.snssdk.com,REJECT
 DOMAIN,tnc3-aliec2.snssdk.com,REJECT
+# 3.36：补 gurd.snssdk.com 整域（对齐 Clash 基础集；模块原先仅按 URL Rewrite 拦 /src/server/v3/package，现整域 REJECT，下方 gurd URL Rewrite 不再可达，保留作记录）
+DOMAIN,gurd.snssdk.com,REJECT
 
-# ── 精确域名：西瓜视频 ──
-DOMAIN,default.ixigua.com,REJECT
+# ── 西瓜视频 ──
+# 3.36：由 DOMAIN 扩为 DOMAIN-SUFFIX，覆盖 *.default.ixigua.com 子域（对齐 Clash 基础集；不影响 -default.ixigua.com 短剧流，二者是不同子域形态）
+DOMAIN-SUFFIX,default.ixigua.com,REJECT
 DOMAIN,v6-novelapp.ixigua.com,REJECT
 
 # ── 精确域名：第三方 ──
