@@ -1,5 +1,5 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.34
+#!desc=番茄小说广告屏蔽, version = 3.35
 
 [Rule]
 # ── 关键词 ──
@@ -123,6 +123,72 @@ DOMAIN,adgw-rr2.alipay.com,REJECT
 DOMAIN,praisewindow-sinfonlineb.ugsdk.cn,REJECT
 # 17:47 日志：www.chengzijianzhan.com 放行，橙子建站（字节广告落地页），连续两次出现，用户确认拦截
 DOMAIN,www.chengzijianzhan.com,REJECT
+
+# ── 3.35：外部 QX 规则列表合并（用户决策全部并入，含高风险条目，风险自负）──
+# 来源为 QuantumultX 风格规则（REJECT-DICT / REJECT-ARRAY / USER-AGENT），Shadowrocket 同名支持，语法原样保留。
+# 已被现有规则覆盖而省略 3 条：p3-reading-sign.fqnovelpic.com（仓库已 REJECT）、
+# v95-aw-novelapp.fqnovelvod.com（仓库已 REJECT-DICT）、bsync3-normal-hl.zijieapi.com（已被 *.zijieapi.com 整域覆盖）。
+# 重复条目 v26-cold.douyinvod.com 仅保留一条。
+# 全部为域名级 REJECT，在 SNI 层即命中，无需进 [MITM] hostname。
+
+# 广告日志 / 上报（fqnovel applog / rtlog / mon / sinfonlineb）
+DOMAIN-SUFFIX,log3-applog-hl.fqnovel.com,REJECT-DICT
+DOMAIN-SUFFIX,log0-applog-hl.fqnovel.com,REJECT-DICT
+DOMAIN-SUFFIX,rtlog3-applog-hl.fqnovel.com,REJECT-DICT
+DOMAIN-SUFFIX,rtlog5-applog-hl.fqnovel.com,REJECT-DICT
+DOMAIN-SUFFIX,mon3-misc-hl.fqnovel.com,REJECT-ARRAY
+DOMAIN-SUFFIX,api5-normal-sinfonlineb.fqnovel.com,REJECT-DICT
+# frontier 为字节长连接网关（push/实时通道），拦截可能影响消息推送，留意真机表现
+DOMAIN-SUFFIX,frontier100-toutiao-hl.fqnovel.com,REJECT-DICT
+
+# 番茄小说阅读 / 视频 / TTS / 播放器接口
+DOMAIN-SUFFIX,v5-se2-jltc-reading-video.qznovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se2-zjnbtc-reading-video.qznovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-ex-mc-reading-video.qznovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-jx-daily-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v95-ynkmtc-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v9-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v3-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-gddgtc-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-zjnbtc-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-bjtc-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-gddgtc-fq-tts.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-jltc-fq-tts.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,lf3-reading.fqnovelstatic.com,REJECT-DICT
+USER-AGENT,ttplayer(version:2.10.252.1073-novel)*,REJECT-DICT
+
+# 字节广告 SDK / 素材签名节点
+DOMAIN-SUFFIX,lf3-mgsdk.dailygn.com,REJECT-DICT
+DOMAIN-SUFFIX,p3-mgsdk-sign.byteimg.com,REJECT-DICT
+DOMAIN-SUFFIX,p3-novel-sign.byteimg.com,REJECT-DICT
+# douyinpic 族共用封面/直播图，整域拒绝可能误伤抖音/西瓜正常封面，留意真机
+DOMAIN-SUFFIX,p11-sign.douyinpic.com,REJECT-DICT
+DOMAIN-SUFFIX,p3-webcast.douyinpic.com,REJECT-DICT
+DOMAIN-SUFFIX,p3-item.ecombdimg.com,REJECT-DICT
+DOMAIN-SUFFIX,lf-reward-video.bytedcdn.com,REJECT-DICT
+DOMAIN-SUFFIX,lf26-cdn-tos.bytegecko.com,REJECT-DICT
+DOMAIN-SUFFIX,lf26-stark-cdn.bdgp.cc,REJECT-DICT
+DOMAIN-SUFFIX,vc-brain.ndcpp.com,REJECT-DICT
+
+# 电商接口（ecombdapi）
+DOMAIN-SUFFIX,ecset5-core-zb.ecombdapi.com,REJECT-DICT
+DOMAIN-SUFFIX,ecset3-core-zb.ecombdapi.com,REJECT-DICT
+DOMAIN-SUFFIX,ec5-core-lf.ecombdapi.com,REJECT-DICT
+DOMAIN-SUFFIX,isaas3-normal-hl.ecombdapi.com,REJECT-DICT
+DOMAIN-SUFFIX,isaas5-normal-hl.ecombdapi.com,REJECT-DICT
+DOMAIN-SUFFIX,ecom3-normal-hl.ecombdapi.com,REJECT-DICT
+
+# ⚠ 高风险（用户决策并入，风险自负）：以下为字节公共接口 / 视频 CDN / 数据上报，
+# 整域拒绝可能影响抖音等 App 的正片流、登录、IM、数据上报与 AB 实验，不只番茄小说广告。
+# 出现异常时优先删以下 8 行排查。
+DOMAIN-SUFFIX,pitaya.bytedance.com,REJECT-DICT
+DOMAIN-SUFFIX,lf3-pitaya.bytetos.com,REJECT-DICT
+DOMAIN-SUFFIX,lf26-pitaya.bytetos.com,REJECT-DICT
+DOMAIN-SUFFIX,v26-cold.douyinvod.com,REJECT-DICT
+DOMAIN-SUFFIX,pull-flv-h26.douyincdn.com,REJECT-DICT
+DOMAIN-SUFFIX,im-open.douyin.com,REJECT-DICT
+DOMAIN-SUFFIX,open.douyin.com,REJECT-DICT
+DOMAIN-SUFFIX,i-hl.snssdk.com,REJECT-DICT
 
 # ── IP ──
 IP-CIDR,49.71.37.101/32,REJECT,no-resolve
