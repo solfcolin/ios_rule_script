@@ -1,37 +1,48 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说广告屏蔽, version = 3.36
+#!desc=番茄小说广告屏蔽, version = 3.37
 
 [Rule]
-# ── 关键词 ──
-# 3.34：3.33 撤掉以下 5 个节点的整域 REJECT、改按路径拦截，但路径正则未覆盖字节当前素材格式
-# （tos-cn-i-1yzifmftcy/<hash>~noop.jpeg 形），广告回潮。临时恢复整域 REJECT 压住，待抓真实广告 URL 补路径后再撤。
+# ── 整域决策：zijieapi（高风险，用户决策）──
 # 3.32（用户决策）：整域屏蔽 *.zijieapi.com。该域承载字节系公共接口（mssdk 签名 / verify / vcs / mon 日志 / 设备风控），
 # 屏蔽会影响本机所有字节系 App（抖音 / 头条 / 西瓜 / 剪映等）的 feed 与登录，不只番茄小说。
-# 若这些 App 出现异常，删除下一行即可回退到按主机族精确拦截（见下方 ads3/ads5 规则）。
+# 若这些 App 出现异常，删除下一行即可回退到「zijieapi 广告投放接口」一节按主机族精确拦截（那是回退，非冗余）。
 DOMAIN-SUFFIX,zijieapi.com,REJECT
 
-# ── 域名后缀：广告投放与统计上报 ──
+# ── 广告投放与统计上报 ──
 DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
 DOMAIN-SUFFIX,p3-ad-sign.byteimg.com,REJECT-200
 DOMAIN-SUFFIX,p26-orange-sign.byteimg.com,REJECT-DICT
+# 3.35 并入：applog / rtlog / mon 上报
+DOMAIN-SUFFIX,log3-applog-hl.fqnovel.com,REJECT-DICT
+DOMAIN-SUFFIX,log0-applog-hl.fqnovel.com,REJECT-DICT
+DOMAIN-SUFFIX,rtlog3-applog-hl.fqnovel.com,REJECT-DICT
+DOMAIN-SUFFIX,rtlog5-applog-hl.fqnovel.com,REJECT-DICT
+DOMAIN-SUFFIX,mon3-misc-hl.fqnovel.com,REJECT-ARRAY
+DOMAIN-SUFFIX,api5-normal-sinfonlineb.fqnovel.com,REJECT-DICT
+# frontier 为字节长连接网关（push/实时通道），拦截可能影响消息推送，留意真机表现
+DOMAIN-SUFFIX,frontier100-toutiao-hl.fqnovel.com,REJECT-DICT
 
-# ── 域名后缀：广告素材 / 图片 CDN ──
-# douyinpic / ecombdimg 为抖音·西瓜·番茄共用素材节点，整域拒绝会连带屏蔽正常封面/头像/商品图，
-# 已改为 [URL Rewrite] 按广告路径拒绝（配合 [MITM] 生效）。若广告漏网再临时放开对应整域，代价见注释。
-# B 方案（临时）：真机日志确认广告图来自以下节点，先整域 REJECT 压广告；不误伤待验证，后续再讨论 A（MITM+路径）。
-# 3.34：以下 5 条全部从注释恢复为整域 REJECT（3.33 误撤导致广告回潮）。
+# ── 广告素材 / 图片 CDN（共用节点，整域拒绝会连带屏蔽正常封面/头像/商品图）──
+# 3.34：以下节点从注释恢复为整域 REJECT（3.33 误撤导致广告回潮）；待抓真实广告 URL 补路径后再撤。
+# 番茄小说专属节点（抖音不使用，可安全整域拒绝）
+DOMAIN-SUFFIX,p3-novel.byteimg.com,REJECT
+DOMAIN-SUFFIX,p6-novel.byteimg.com,REJECT
+DOMAIN-SUFFIX,p6-novel-sign.byteimg.com,REJECT
+DOMAIN-SUFFIX,p9-novel-sign.byteimg.com,REJECT
 DOMAIN-SUFFIX,p3.douyinpic.com,REJECT
 DOMAIN-SUFFIX,p3-sign.douyinpic.com,REJECT-DICT
 DOMAIN-SUFFIX,p3-webcast-sign.douyinpic.com,REJECT-DICT
 DOMAIN-SUFFIX,p11.douyinpic.com,REJECT
 DOMAIN-SUFFIX,p11-webcast-sign.douyinpic.com,REJECT-DICT
 DOMAIN-SUFFIX,p26.douyinpic.com,REJECT
-# 番茄小说专属节点（抖音不使用，可安全整域拒绝）
-DOMAIN-SUFFIX,p3-novel.byteimg.com,REJECT
-DOMAIN-SUFFIX,p6-novel.byteimg.com,REJECT
-DOMAIN-SUFFIX,p6-novel-sign.byteimg.com,REJECT
-DOMAIN-SUFFIX,p9-novel-sign.byteimg.com,REJECT
-DOMAIN-SUFFIX,p9-reading-sign.fqnovelpic.com,REJECT
+DOMAIN-SUFFIX,p3-aio.ecombdimg.com,REJECT
+DOMAIN-SUFFIX,p9-aio.ecombdimg.com,REJECT
+DOMAIN-SUFFIX,p3-ecom-qualification-sign.ecombdimg.com,REJECT-DICT
+DOMAIN-SUFFIX,p26-item.ecombdimg.com,REJECT
+DOMAIN,lf-normal-gr-sourcecdn.bytegecko.com,REJECT
+DOMAIN,lf-normal-login-sourcecdn.bytegecko.com,REJECT
+
+# ── 广告素材 / SDK 签名节点（真机日志确认 + 3.35 并入）──
 # 13:42 日志：p3-reading-sign.fqnovelpic.com 走 PROXY 放行 327 次，疑似广告图源；临时整域 REJECT 测试（可能误伤正常章节插图，待验证）
 DOMAIN-SUFFIX,p3-reading-sign.fqnovelpic.com,REJECT
 # 15:31-15:35 日志：lf3-reading.fqnovelpic.com 每分钟规律放行一次（GEOIP,CN,DIRECT），与 p3-reading-sign 同族，疑似广告图源接手；临时整域 REJECT 测试
@@ -44,17 +55,23 @@ DOMAIN-SUFFIX,p9-mgsdk-sign.byteimg.com,REJECT
 DOMAIN-SUFFIX,lf3-mgsdk-sign.dailygn.com,REJECT
 DOMAIN-SUFFIX,lf6-mgsdk-sign.dailygn.com,REJECT
 DOMAIN-SUFFIX,lf9-mgsdk-sign.dailygn.com,REJECT
-# ecombdimg 为抖音电商商品图节点，同样改按广告路径拒绝
-# B 方案（临时）：真机日志确认广告图来自以下节点，先整域 REJECT 压广告；不误伤待验证，后续再讨论 A（MITM+路径）。
-DOMAIN-SUFFIX,p3-aio.ecombdimg.com,REJECT
-DOMAIN-SUFFIX,p9-aio.ecombdimg.com,REJECT
-# 3.34：从注释恢复整域 REJECT（3.33 误撤导致广告回潮）。
-DOMAIN-SUFFIX,p3-ecom-qualification-sign.ecombdimg.com,REJECT-DICT
-DOMAIN-SUFFIX,p26-item.ecombdimg.com,REJECT
-DOMAIN,lf-normal-gr-sourcecdn.bytegecko.com,REJECT
-DOMAIN,lf-normal-login-sourcecdn.bytegecko.com,REJECT
+# 3.35 并入：mgsdk / novel / webcast / reward-video 等广告 SDK 与素材签名节点
+DOMAIN-SUFFIX,lf3-mgsdk.dailygn.com,REJECT-DICT
+DOMAIN-SUFFIX,p3-mgsdk-sign.byteimg.com,REJECT-DICT
+DOMAIN-SUFFIX,p3-novel-sign.byteimg.com,REJECT-DICT
+DOMAIN-SUFFIX,p9-reading-sign.fqnovelpic.com,REJECT
+DOMAIN-SUFFIX,lf3-reading.fqnovelstatic.com,REJECT-DICT
+DOMAIN-SUFFIX,lf-reward-video.bytedcdn.com,REJECT-DICT
+DOMAIN-SUFFIX,lf26-cdn-tos.bytegecko.com,REJECT-DICT
+DOMAIN-SUFFIX,lf26-stark-cdn.bdgp.cc,REJECT-DICT
+DOMAIN-SUFFIX,vc-brain.ndcpp.com,REJECT-DICT
+DOMAIN-SUFFIX,vc-brain-v6.ndcpp.com,REJECT
+# douyinpic 族共用封面/直播图，整域拒绝可能误伤抖音/西瓜正常封面，留意真机
+DOMAIN-SUFFIX,p11-sign.douyinpic.com,REJECT-DICT
+DOMAIN-SUFFIX,p3-webcast.douyinpic.com,REJECT-DICT
+DOMAIN-SUFFIX,p3-item.ecombdimg.com,REJECT-DICT
 
-# ── 域名后缀：小说 / 视频 App 侧接口 ──
+# ── 番茄小说 App 侧接口 ──
 DOMAIN-SUFFIX,v5-novelapp.fqnovelvod.com,REJECT
 DOMAIN-SUFFIX,v11-novelapp.fqnovelvod.com,REJECT
 DOMAIN-SUFFIX,v26-novelapp.fqnovelvod.com,REJECT
@@ -67,13 +84,26 @@ DOMAIN-SUFFIX,v5-bd-daily-reading-ad.qznovelvod.com,REJECT
 DOMAIN-SUFFIX,v9-reading-ad.qznovelvod.com,REJECT
 DOMAIN-SUFFIX,mon11-misc-hl.fqnovel.com,REJECT
 DOMAIN-SUFFIX,xpis-tel-xcdn.youku.com,REJECT-DICT
-DOMAIN-SUFFIX,vc-brain-v6.ndcpp.com,REJECT
+# 3.35 并入：reading-video / novelapp / fq-tts 节点族
+DOMAIN-SUFFIX,v5-se2-jltc-reading-video.qznovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se2-zjnbtc-reading-video.qznovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-ex-mc-reading-video.qznovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-jx-daily-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v95-ynkmtc-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v9-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v3-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-gddgtc-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-zjnbtc-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-bjtc-novelapp.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-gddgtc-fq-tts.fqnovelvod.com,REJECT-DICT
+DOMAIN-SUFFIX,v5-se-jltc-fq-tts.fqnovelvod.com,REJECT-DICT
+USER-AGENT,ttplayer(version:2.10.252.1073-novel)*,REJECT-DICT
 
-# ── 域名后缀：字节广告跳转域名 ──
+# ── 字节广告跳转域名 ──
 DOMAIN-SUFFIX,byteorge.com,REJECT
 DOMAIN-SUFFIX,bytegoofy.com,REJECT
 
-# ── 精确域名：穿山甲 / 巨量引擎 ──
+# ── 穿山甲 / 巨量引擎（精确域名）──
 DOMAIN,p6-ad-sign.byteimg.com,REJECT
 DOMAIN,p9-ad-sign.byteimg.com,REJECT
 DOMAIN,sf3-ttcdn-tos.pstatp.com,REJECT
@@ -85,10 +115,11 @@ DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT
 DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
 DOMAIN,ad.toutiao.com,REJECT
 DOMAIN,dsp.toutiao.com,REJECT
-# 秒针广告监测：w37fhy 为整域，升级为 DOMAIN-SUFFIX（原 g.cn 单主机规则下方已保留，可删）
+# 秒针广告监测：w37fhy 为整域，升级为 DOMAIN-SUFFIX
 DOMAIN-SUFFIX,miaozhen.com,REJECT
 
-# ── 域名后缀：zijieapi 广告投放接口（仅 ad 主机族，勿用整域关键词） ──
+# ── zijieapi 广告投放接口（仅 ad 主机族，勿用整域关键词；本节是上方整域决策的回退）──
+# 整域 *.zijieapi.com 生效时本节条目先被整域 REJECT、不单独命中；删除上方整域后按主机族精确拦截。
 DOMAIN-SUFFIX,ads3-normal-hl.zijieapi.com,REJECT
 DOMAIN-SUFFIX,ads3-normal-lf.zijieapi.com,REJECT
 DOMAIN-SUFFIX,ads3-normal-lq.zijieapi.com,REJECT
@@ -101,7 +132,7 @@ DOMAIN-SUFFIX,ads5-normal-lq.zijieapi.com,REJECT
 DOMAIN,ma.zijieapi.com,REJECT
 DOMAIN,saveu5-normal-hl.zijieapi.com,REJECT
 
-# ── 精确域名：头条 / 抖音 SDK ──
+# ── 头条 / 抖音 SDK（精确域名）──
 DOMAIN,i.snssdk.com,REJECT
 DOMAIN,i-lq.snssdk.com,REJECT
 DOMAIN,mcs.snssdk.com,REJECT
@@ -129,53 +160,7 @@ DOMAIN,praisewindow-sinfonlineb.ugsdk.cn,REJECT
 # 17:47 日志：www.chengzijianzhan.com 放行，橙子建站（字节广告落地页），连续两次出现，用户确认拦截
 DOMAIN,www.chengzijianzhan.com,REJECT
 
-# ── 3.35：外部 QX 规则列表合并（用户决策全部并入，含高风险条目，风险自负）──
-# 来源为 QuantumultX 风格规则（REJECT-DICT / REJECT-ARRAY / USER-AGENT），Shadowrocket 同名支持，语法原样保留。
-# 已被现有规则覆盖而省略 3 条：p3-reading-sign.fqnovelpic.com（仓库已 REJECT）、
-# v95-aw-novelapp.fqnovelvod.com（仓库已 REJECT-DICT）、bsync3-normal-hl.zijieapi.com（已被 *.zijieapi.com 整域覆盖）。
-# 重复条目 v26-cold.douyinvod.com 仅保留一条。
-# 全部为域名级 REJECT，在 SNI 层即命中，无需进 [MITM] hostname。
-
-# 广告日志 / 上报（fqnovel applog / rtlog / mon / sinfonlineb）
-DOMAIN-SUFFIX,log3-applog-hl.fqnovel.com,REJECT-DICT
-DOMAIN-SUFFIX,log0-applog-hl.fqnovel.com,REJECT-DICT
-DOMAIN-SUFFIX,rtlog3-applog-hl.fqnovel.com,REJECT-DICT
-DOMAIN-SUFFIX,rtlog5-applog-hl.fqnovel.com,REJECT-DICT
-DOMAIN-SUFFIX,mon3-misc-hl.fqnovel.com,REJECT-ARRAY
-DOMAIN-SUFFIX,api5-normal-sinfonlineb.fqnovel.com,REJECT-DICT
-# frontier 为字节长连接网关（push/实时通道），拦截可能影响消息推送，留意真机表现
-DOMAIN-SUFFIX,frontier100-toutiao-hl.fqnovel.com,REJECT-DICT
-
-# 番茄小说阅读 / 视频 / TTS / 播放器接口
-DOMAIN-SUFFIX,v5-se2-jltc-reading-video.qznovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,v5-se2-zjnbtc-reading-video.qznovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,v5-se-ex-mc-reading-video.qznovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,v5-jx-daily-novelapp.fqnovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,v95-ynkmtc-novelapp.fqnovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,v9-novelapp.fqnovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,v3-novelapp.fqnovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,v5-se-gddgtc-novelapp.fqnovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,v5-se-zjnbtc-novelapp.fqnovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,v5-se-bjtc-novelapp.fqnovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,v5-se-gddgtc-fq-tts.fqnovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,v5-se-jltc-fq-tts.fqnovelvod.com,REJECT-DICT
-DOMAIN-SUFFIX,lf3-reading.fqnovelstatic.com,REJECT-DICT
-USER-AGENT,ttplayer(version:2.10.252.1073-novel)*,REJECT-DICT
-
-# 字节广告 SDK / 素材签名节点
-DOMAIN-SUFFIX,lf3-mgsdk.dailygn.com,REJECT-DICT
-DOMAIN-SUFFIX,p3-mgsdk-sign.byteimg.com,REJECT-DICT
-DOMAIN-SUFFIX,p3-novel-sign.byteimg.com,REJECT-DICT
-# douyinpic 族共用封面/直播图，整域拒绝可能误伤抖音/西瓜正常封面，留意真机
-DOMAIN-SUFFIX,p11-sign.douyinpic.com,REJECT-DICT
-DOMAIN-SUFFIX,p3-webcast.douyinpic.com,REJECT-DICT
-DOMAIN-SUFFIX,p3-item.ecombdimg.com,REJECT-DICT
-DOMAIN-SUFFIX,lf-reward-video.bytedcdn.com,REJECT-DICT
-DOMAIN-SUFFIX,lf26-cdn-tos.bytegecko.com,REJECT-DICT
-DOMAIN-SUFFIX,lf26-stark-cdn.bdgp.cc,REJECT-DICT
-DOMAIN-SUFFIX,vc-brain.ndcpp.com,REJECT-DICT
-
-# 电商接口（ecombdapi）
+# ── 电商接口（ecombdapi，3.35 并入）──
 DOMAIN-SUFFIX,ecset5-core-zb.ecombdapi.com,REJECT-DICT
 DOMAIN-SUFFIX,ecset3-core-zb.ecombdapi.com,REJECT-DICT
 DOMAIN-SUFFIX,ec5-core-lf.ecombdapi.com,REJECT-DICT
@@ -183,7 +168,7 @@ DOMAIN-SUFFIX,isaas3-normal-hl.ecombdapi.com,REJECT-DICT
 DOMAIN-SUFFIX,isaas5-normal-hl.ecombdapi.com,REJECT-DICT
 DOMAIN-SUFFIX,ecom3-normal-hl.ecombdapi.com,REJECT-DICT
 
-# ⚠ 高风险（用户决策并入，风险自负）：以下为字节公共接口 / 视频 CDN / 数据上报，
+# ⚠ 高风险（用户决策并入，风险自负）：字节公共接口 / 视频 CDN / 数据上报，
 # 整域拒绝可能影响抖音等 App 的正片流、登录、IM、数据上报与 AB 实验，不只番茄小说广告。
 # 出现异常时优先删以下 8 行排查。
 DOMAIN-SUFFIX,pitaya.bytedance.com,REJECT-DICT
@@ -224,7 +209,7 @@ URL-REGEX,^https?:\/\/[^\/]+\.byteimg\.com\/web\.business\.image,REJECT
 ^https?:\/\/gurd\.snssdk\.com\/src\/server\/v3\/package _ reject
 ^https?:\/\/.+\.pstatp\.com\/obj\/mosaic-legacy\/.+\?from\=ad _ reject
 # 以下三条均为「死规则」：snssdk / pstatp 的路径型规则必须先被 [MITM] hostname 覆盖才能命中，
-# 否则内核看不到 HTTPS 的路径，永不生效也不报错。其中 pstatp 那条已被上面第 108 行按通用形式包含。
+# 否则内核看不到 HTTPS 的路径，永不生效也不报错。其中 pstatp 那条已被上面 `.pstatp.com` 的通用形式包含。
 # 故意不为 snssdk 扩大 MITM：域名级 REJECT（见 [Rule] 的 snssdk 精确域名）在 SNI 层即可拦截，不依赖 MITM；
 # 把 +.snssdk.com 做全局 MITM 会把抖音大量接口卷入解密，触发证书校验（pinning）报错并拖慢 feed。
 # 真要启用，请先在 [MITM] hostname 精确加入对应子域，再逐条核对日志命中。
