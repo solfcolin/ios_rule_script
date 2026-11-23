@@ -10,6 +10,13 @@
         "--no-performance-crux",
         "--redactNetworkHeaders"
       ]
+    },
+    "proxypin_mobile": {
+      "type": "http",
+      "url": "http://192.168.1.8:9127/mcp",
+      "headers": {
+        "Authorization": "Bearer 8f376cee3c1d6fa16bb28b7ffa0a3739d108bc712c6700b1"
+      }
     }
   }
 }

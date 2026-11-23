@@ -24,6 +24,26 @@ Shadowrocket 的 `[URL Rewrite]` 与 `URL-REGEX` **只有在该域名被 MITM �
    REJECT** 去追广告节点，最后把 REJECT 加到了抖音/番茄/西瓜共用的 CDN 上，连带屏蔽了正常视频与封面。
    修掉 MITM 这一环，才能同时做到"拦广告"和"不拦正片"。
 
+## 核心机制：DNS 层拦截的实现与 `[Host]` 段的处置
+
+**DNS 层拦截的本质**：`[Rule]` 里 `DOMAIN-SUFFIX` / `DOMAIN-WILDCARD` / `DOMAIN` + `REJECT`（或 `REJECT-DROP`
+等）就是在解析域名之后、建立 TCP 连接之前拒绝，**不依赖 MITM**，也不走 `[URL Rewrite]`。这是 Shadowrocket
+最「底层」的拦截机制。
+
+**`[Host]` 段（`*.example.com = 0.0.0.0`）是 Surge 语法，非 Shadowrocket 模块官方段**——官方无公开仓库/文档
+（`github.com/shadowrocket/Shadowrocket` 404）；类官方站 shadowrocket.vip 主页只讲规则与 URL Rewrite，不提
+`[Host]`；真实模块集合（deezertidal 200+ 个模块、blackmatrix7）均**零使用** `[Host]`。**但 3.43 起用户决策
+试引入**：把「纯 REJECT」且可无损表达的域名（`DOMAIN-SUFFIX`→`*.X`、`DOMAIN`→`X`）映射到 `0.0.0.0` + `::`，
+对应 `[Rule]` 行**保留作兜底**（若本段在你的版本里未被识别，`[Rule]` REJECT 仍在域名层拦截，广告不会回潮）。
+**真机验证本段是否生效**（请求记录里命中表现为「连接 0.0.0.0 / :: 失败」）；不生效则删掉 `[Host]` 段回退，
+本段生效且确认后再移除被覆盖的 `[Rule]` 行。
+
+- `[Host]` 只会做「整域后缀匹配」（`*.domain.com` 匹配全部子域），**表达不了主机前缀通配**
+  （`p?-novel.byteimg.com`、`p*.douyinpic.com`、`v5-se*-reading-video.qznovelvod.com`）——这类**仍留 `[Rule]`**，
+  不得硬扩成 `*.byteimg.com`（会违反上面「共用 CDN 族禁止整域 REJECT」，连带屏蔽正常封面/头像/商品图）。
+- `[Host]` 映射 `0.0.0.0` 只等价于「连接失败」，**丢失** `REJECT-DICT` / `REJECT-200` / `REJECT-ARRAY` 的
+  响应级语义（部分 SDK 靠它们避免报错/重试循环），故这三类动作的规则**仍留 `[Rule]`**。
+
 ## 规则编写原则
 
 - **共用 CDN 族禁止整域 REJECT**：`*.byteimg.com`、`*.douyinpic.com`、`*.ecombdimg.com`、`*.pstatp.com`
