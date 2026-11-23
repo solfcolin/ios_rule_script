@@ -1,6 +1,6 @@
 #!name=番茄小说 @zqzess
-#!desc=番茄小说/红果 DNS 广告屏蔽（[Host] 黑洞，源自 home-dns-adblock/config）, version = 4.3
-
+#!desc=番茄小说/红果 DNS 广告屏蔽, version = 4.3
+#!desc=（[Host] 黑洞，源自 home-dns-adblock/config）
 [Host]
 # [Host] DNS 黑洞：`*.X = 127.0.0.1`（IPv4）+ `::`（IPv6），域名解析即指向不可达地址、连接失败，不依赖 MITM。
 # `*.X` 等价 dnsmasq `address=/X/`：拦 X 及全部子域。白名单（正片/图床/基础设施）已剔除；
