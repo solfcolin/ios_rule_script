@@ -19,6 +19,7 @@
          若有变化 → minor+1（遵循仓库「改动即 bump version」惯例）。
 """
 import argparse
+import datetime
 import os
 import re
 import sys
@@ -67,19 +68,19 @@ def read_existing(path):
 
 
 def read_version(path):
-    """读取现有模块 version = X.Y。"""
+    """读取现有模块的 version 字符串（如 "4.6" 或 "2026-11-24"）。"""
     if os.path.exists(path):
         with open(path, encoding="utf-8") as f:
             for line in f:
-                m = re.search(r"version = (\d+)\.(\d+)", line)
+                m = re.search(r"version = (\S+)", line)
                 if m:
-                    return int(m.group(1)), int(m.group(2))
+                    return m.group(1)
     return None
 
 
 def build_module(exact, suffix, version, annotations):
     total = len(exact) + len(suffix)
-    v = f"{version[0]}.{version[1]}"
+    v = version
 
     def rule(kind, d):
         line = f"{kind},{d},REJECT"
@@ -134,12 +135,11 @@ def main():
 
     cur = read_version(args.output)
     old_rules, annotations = read_existing(args.output)
+    today = datetime.date.today().isoformat()
     if cur is not None and old_rules == new_rules:
-        version = cur  # 规则集无变化 → 保持版本（幂等）
-    elif cur is not None:
-        version = (cur[0], cur[1] + 1)  # 有变化 → minor+1
+        version = cur  # 规则集无变化 → 保持原版本日期（幂等）
     else:
-        version = (1, 0)
+        version = today  # 规则集有变化或首次生成 → 版本 = 规则最后变化日期
 
     content = build_module(exact, suffix, version, annotations)
     with open(args.output, "w", encoding="utf-8") as f:
@@ -147,7 +147,7 @@ def main():
 
     print(
         f"生成完成：{len(exact)} 精确 + {len(suffix)} 后缀 = {len(exact) + len(suffix)} 条，"
-        f"version={version[0]}.{version[1]}"
+        f"version={version}"
     )
 
 
