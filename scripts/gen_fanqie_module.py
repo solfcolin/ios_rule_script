@@ -68,11 +68,11 @@ def read_existing(path):
 
 
 def read_version(path):
-    """读取现有模块的 version 字符串（如 "4.6" 或 "2026-11-24"）。"""
+    """读取现有文件的 version 字符串（如 "2026-11-24" 或 "4.6"）。"""
     if os.path.exists(path):
         with open(path, encoding="utf-8") as f:
             for line in f:
-                m = re.search(r"version = (\S+)", line)
+                m = re.search(r"(?:version = |生成时间：)(\d{4}-\d{2}-\d{2}|\d+(?:\.\d+)?)", line)
                 if m:
                     return m.group(1)
     return None
@@ -112,12 +112,44 @@ def build_module(exact, suffix, version, annotations):
     return "\n".join(lines) + "\n"
 
 
+def build_qx_list(exact, suffix, version):
+    """生成 Quantumult X 分流文件（filter_remote）：DOMAIN / DOMAIN-SUFFIX + REJECT。"""
+    total = len(exact) + len(suffix)
+    lines = [
+        "# 番茄小说 @zqzess",
+        f"# 生成时间：{version}（规则最后变化日；仅在规则集变化时重生成并更新）",
+        "# 用法：Quantumult X「分流」-> 「引用规则」，作为 filter_remote 引入，REJECT 走 REJECT 策略组。",
+        "#",
+        "# 上游广告规则（自动生成，勿手改；与模块同源同规则集）",
+        "# 生成：GitHub Actions 定时任务（.github/workflows/sync-fanqie-module.yml）",
+        f"# 条数：{total}（{len(exact)} 精确 + {len(suffix)} 后缀）",
+        "#",
+        "# 注意：本文件全量按上游生成，未保留原手写 QX 特化规则（IP-CIDR / 精确 DOMAIN 绕开 QX DOMAIN-SUFFIX 等），",
+        "#       若个别域在圈X DOMAIN-SUFFIX 下不命中，按真机请求记录改回精确 DOMAIN。",
+    ]
+    for d in exact:
+        lines.append(f"DOMAIN,{d},REJECT")
+    for d in suffix:
+        lines.append(f"DOMAIN-SUFFIX,{d},REJECT")
+    return "\n".join(lines) + "\n"
+
+
+def resolve_version(path, new_rules):
+    """版本 = 规则集最后变化日期：规则集无变化保持原日期（幂等），有变化置为今天。"""
+    cur = read_version(path)
+    old_rules, _ = read_existing(path)
+    if cur is not None and old_rules == new_rules:
+        return cur
+    return datetime.date.today().isoformat()
+
+
 def main():
-    ap = argparse.ArgumentParser(description="生成 FanQieNovel.module")
+    ap = argparse.ArgumentParser(description="生成 FanQieNovel.module / FanQieNovel.list")
     ap.add_argument("--upstream", required=True)
     ap.add_argument("--extra", required=True)
     ap.add_argument("--fq", required=True)
-    ap.add_argument("--output", required=True)
+    ap.add_argument("--output", required=True, help="Shadowrocket 模块输出路径")
+    ap.add_argument("--output-qx", default=None, help="Quantumult X 分流文件输出路径（可选）")
     args = ap.parse_args()
 
     domains = set()
@@ -133,20 +165,24 @@ def main():
         f"DOMAIN-SUFFIX,{d},REJECT" for d in suffix
     )
 
-    cur = read_version(args.output)
+    # 模块
     old_rules, annotations = read_existing(args.output)
-    today = datetime.date.today().isoformat()
-    if cur is not None and old_rules == new_rules:
-        version = cur  # 规则集无变化 → 保持原版本日期（幂等）
-    else:
-        version = today  # 规则集有变化或首次生成 → 版本 = 规则最后变化日期
-
-    content = build_module(exact, suffix, version, annotations)
+    version = resolve_version(args.output, new_rules)
     with open(args.output, "w", encoding="utf-8") as f:
-        f.write(content)
+        f.write(build_module(exact, suffix, version, annotations))
+
+    # QX 分流文件（可选，各自独立跟踪版本）
+    if args.output_qx:
+        version_qx = resolve_version(args.output_qx, new_rules)
+        with open(args.output_qx, "w", encoding="utf-8") as f:
+            f.write(build_qx_list(exact, suffix, version_qx))
+        print(
+            f"QX 分流：{len(exact)} 精确 + {len(suffix)} 后缀 = {len(exact) + len(suffix)} 条，"
+            f"version={version_qx}"
+        )
 
     print(
-        f"生成完成：{len(exact)} 精确 + {len(suffix)} 后缀 = {len(exact) + len(suffix)} 条，"
+        f"模块：{len(exact)} 精确 + {len(suffix)} 后缀 = {len(exact) + len(suffix)} 条，"
         f"version={version}"
     )
 

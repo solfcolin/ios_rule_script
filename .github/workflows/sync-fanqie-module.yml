@@ -40,27 +40,29 @@ jobs:
             echo "$f: $(grep -c '^address=/' "/tmp/$f") 条启用条目"
           done
 
-      - name: 重新生成模块
+      - name: 重新生成模块与 QX 分流
         run: |
           python3 scripts/gen_fanqie_module.py \
             --upstream /tmp/adblock-upstream.conf \
             --extra /tmp/adblock-extra.conf \
             --fq /tmp/adblock-fq.conf \
-            --output Shadowrocket/module/FanQieNovel.module
+            --output Shadowrocket/module/FanQieNovel.module \
+            --output-qx QuantumultX/FanQieNovel.list
 
       - name: 安全检查（防上游结构变化产出空规则）
         run: |
-          COUNT="$(grep -cE '^(DOMAIN,|DOMAIN-SUFFIX,)' Shadowrocket/module/FanQieNovel.module)"
-          echo "生成规则数: $COUNT"
-          if [ "$COUNT" -lt 100 ]; then
-            echo "::error::生成规则数异常偏少（$COUNT < 100），疑似上游格式变化，已中止提交（模块改动保留在工作区不推送）"
+          MOD_COUNT="$(grep -cE '^(DOMAIN,|DOMAIN-SUFFIX,)' Shadowrocket/module/FanQieNovel.module)"
+          QX_COUNT="$(grep -cE '^(DOMAIN,|DOMAIN-SUFFIX,)' QuantumultX/FanQieNovel.list)"
+          echo "模块规则数: $MOD_COUNT，QX 分流规则数: $QX_COUNT"
+          if [ "$MOD_COUNT" -lt 100 ] || [ "$QX_COUNT" -lt 100 ]; then
+            echo "::error::生成规则数异常偏少（模块 $MOD_COUNT / QX $QX_COUNT < 100），疑似上游格式变化，已中止提交（改动保留在工作区不推送）"
             exit 1
           fi
 
       - name: 检查是否有改动
         id: changed
         run: |
-          if git diff --quiet -- Shadowrocket/module/FanQieNovel.module; then
+          if git diff --quiet -- Shadowrocket/module/FanQieNovel.module QuantumultX/FanQieNovel.list; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "上游无有效更新（规则无变化），跳过提交"
           else
@@ -75,6 +77,6 @@ jobs:
           echo "本次版本: $VERSION"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Shadowrocket/module/FanQieNovel.module
+          git add Shadowrocket/module/FanQieNovel.module QuantumultX/FanQieNovel.list
           git commit -m "chore(module): 番茄小说广告屏蔽自动同步上游，版本 ${VERSION}，来源 home-dns-adblock@${{ steps.upstream.outputs.sha }}"
           git push
