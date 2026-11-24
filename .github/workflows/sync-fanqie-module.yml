@@ -1,0 +1,80 @@
+name: Sync FanQieNovel Module
+
+# 监测 https://github.com/abclq/home-dns-adblock.git 上游更新：
+# 有更新则用 scripts/gen_fanqie_module.py 重新生成 Shadowrocket/module/FanQieNovel.module 并提交。
+# 判定方式：拉取上游三份 dnsmasq 配置 → 重新生成模块 → 与仓库内版本 diff；
+#           规则无变化（上游只改了注释等）则产物与现版完全一致，不产生提交。
+
+on:
+  schedule:
+    - cron: "0 4 * * *" # 每天 UTC 04:00（北京 12:00）检测一次；上游 home-dns-adblock 自身按天同步，次日 04:00 能覆盖其最新产物
+  workflow_dispatch: {} # 支持手动触发
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-fanqie-module
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 获取上游最新 commit
+        id: upstream
+        run: |
+          SHA="$(git ls-remote https://github.com/abclq/home-dns-adblock.git HEAD | awk '{print $1}')"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "上游 HEAD: $SHA"
+
+      - name: 拉取上游配置
+        run: |
+          BASE="https://raw.githubusercontent.com/abclq/home-dns-adblock/main/config"
+          for f in adblock-upstream.conf adblock-extra.conf adblock-fq.conf; do
+            curl -fsSL --retry 3 "$BASE/$f" -o "/tmp/$f" \
+              || { echo "::error::拉取 $f 失败（上游文件可能改名/移动）"; exit 1; }
+            echo "$f: $(grep -c '^address=/' "/tmp/$f") 条启用条目"
+          done
+
+      - name: 重新生成模块
+        run: |
+          python3 scripts/gen_fanqie_module.py \
+            --upstream /tmp/adblock-upstream.conf \
+            --extra /tmp/adblock-extra.conf \
+            --fq /tmp/adblock-fq.conf \
+            --output Shadowrocket/module/FanQieNovel.module
+
+      - name: 安全检查（防上游结构变化产出空规则）
+        run: |
+          COUNT="$(grep -cE '^(DOMAIN,|DOMAIN-SUFFIX,)' Shadowrocket/module/FanQieNovel.module)"
+          echo "生成规则数: $COUNT"
+          if [ "$COUNT" -lt 100 ]; then
+            echo "::error::生成规则数异常偏少（$COUNT < 100），疑似上游格式变化，已中止提交（模块改动保留在工作区不推送）"
+            exit 1
+          fi
+
+      - name: 检查是否有改动
+        id: changed
+        run: |
+          if git diff --quiet -- Shadowrocket/module/FanQieNovel.module; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "上游无有效更新（规则无变化），跳过提交"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "检测到上游规则更新"
+          fi
+
+      - name: 提交并推送
+        if: steps.changed.outputs.changed == 'true'
+        run: |
+          VERSION="$(grep -m1 -o 'version = [0-9.]*' Shadowrocket/module/FanQieNovel.module | grep -o '[0-9.]*')"
+          echo "本次版本: $VERSION"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Shadowrocket/module/FanQieNovel.module
+          git commit -m "chore(module): 番茄小说广告屏蔽自动同步上游，版本 ${VERSION}，来源 home-dns-adblock@${{ steps.upstream.outputs.sha }}"
+          git push

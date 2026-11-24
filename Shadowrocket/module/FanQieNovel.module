@@ -3,167 +3,26 @@
 #!desc=（[Rule] DNS 层拦截，源自 home-dns-adblock/config）
 [Rule]
 # 全部走 [Rule] DNS 层拦截，不依赖 [Host] 映射、不依赖 MITM。
-#   完整广告主机名 → `DOMAIN,X,REJECT` 精确拦（如 ads3-normal-hl.zijieapi.com，951 条）；
-#   69 个注册域 → `DOMAIN-SUFFIX,X,REJECT` 拦 X 及全部子域（如 googleadservices.com）。
-#   曾用 [Host] 精确映射（X = 127.0.0.1）实测不生效，故全量迁到 [Rule]。
-# 白名单（正片/图床/基础设施）已剔除；`-reading-ad.qznovelvod.com` 广告视频子域故意保留（正片走 -reading-video，不同子域）。
+#   完整广告主机名 → `DOMAIN,X,REJECT` 精确拦（如 ads3-normal-hl.zijieapi.com）。
+#   注册域 → `DOMAIN-SUFFIX,X,REJECT` 拦 X 及全部子域（如 googleadservices.com）。
+# 白名单（正片/图床/基础设施）已剔除（来源 whitelist）；`-reading-ad.qznovelvod.com` 广告视频子域故意保留（正片走 -reading-video）。
 # ═══════════════════════════════════════════
-# 来源：home-dns-adblock/config/adblock-fq.conf
-# ═══════════════════════════════════════════
-# 红果/番茄去广告规则（dnsmasq）
-# 来源：honue/rules · chxm1023/Script_X · anti-AD · AWAvenue-Ads-Rule · 字节系社区规则
-# 更新：2026-10-14  共 45 条（手工维护 · 勿用 gen_rules.py 覆盖，见 README）
-# 注：「更新」= 最后一次规则增删日，手工改；不是同步日（同步不会动它）
-# 白名单保护：qznovelvod(正片) fqnovelpic(图床) douyincdn/douyinliving(正片+直播流)
-DOMAIN,activity-ag.awemeughun.com,REJECT
-DOMAIN,ad.toutiao.com,REJECT
-DOMAIN,ads3-normal-hl.zijieapi.com,REJECT
-DOMAIN,ads3-normal-lf.zijieapi.com,REJECT
-DOMAIN,ads3-normal-lq.zijieapi.com,REJECT
-DOMAIN,ads5-normal-hl.zijieapi.com,REJECT
-DOMAIN,ads5-normal-lf.zijieapi.com,REJECT
-DOMAIN,ads5-normal-lq.zijieapi.com,REJECT
-DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net,REJECT
-DOMAIN,api-access.pangolin-sdk-toutiao.com,REJECT
-DOMAIN,api-access.pangolin-sdk-toutiao1.com,REJECT
-DOMAIN,api.iegadp.qq.com,REJECT
-# [林柒 2026-10-06 移除] address=/api3-normal-sinfonlinea.fqnovel.com/# + api5-* — sinfonlinea
-#   是番茄反作弊/风控SDK，拦截会导致App功能异常(加载不出/无法播放)，广告子域已被其他规则覆盖
-DOMAIN,dig.bdurl.net,REJECT
-# [林柒 2026-10-06 移除] address=/fqnovelvod.com/# — 该域是番茄/红果正片CDN主域(实测 v3/v6/www 全被牵连)，
-#   已改用下方精确的 v*-reading-ad.qznovelvod.com 广告子域规则替代
-# [林柒 2026-10-06 移除] address=/is.snssdk.com/# — 实测手机请求4次，非广告(风控/配置)
-# [Ekko 2026-10-29 解除拦截] address=/i-lq.snssdk.com/
-# [Ekko 2026-10-29 解除拦截] address=/i.snssdk.com/
-DOMAIN,l2-toutiao-quic-ipv6-ml.gslb.ksyuncdn.com,REJECT
-# address=/lf-webcast-gr-sourcecdn.bytegecko.com/#
-# [林柒 2026-10-11 移除] — 正片/直播图床被误封，导致抖音封面白屏、加载不出
-# address=/lf9-webcast-cdn-tos-ncdn.bytegecko.com/#
-# [林柒 2026-10-11 移除] — 正片/直播图床被误封，导致抖音封面白屏、加载不出
-# [Ekko 2026-10-29 解除拦截] address=/mcs.snssdk.com/
-DOMAIN,minigame3-normal-hl.zijieapi.com,REJECT
-DOMAIN,minigame3-normal-lf.zijieapi.com,REJECT
-DOMAIN,minigame3-normal-lq.zijieapi.com,REJECT
-DOMAIN,minigame5-normal-hl.zijieapi.com,REJECT
-DOMAIN,minigame5-normal-lf.zijieapi.com,REJECT
-DOMAIN,minigame5-normal-lq.zijieapi.com,REJECT
-DOMAIN,msync-im1-vip6-std.easemob.com,REJECT
-# [林柒 2026-10-06 移除] address=/p3-novel-sign.byteimg.com/# — novel-sign 是番茄/红果
-#   正片签名CDN(实测手机请求12次全被拦截,导致加载不出)，广告签名是 ad-sign，已保留
-DOMAIN,p3-ad-sign.byteimg.com,REJECT
-# address=/p3-sign.douyinpic.com/#
-# [林柒 2026-10-11 移除] — 正片/直播图床被误封，导致抖音封面白屏、加载不出
-# address=/p3-webcast.douyinpic.com/#
-# [林柒 2026-10-11 移除] — 正片/直播图床被误封，导致抖音封面白屏、加载不出
-DOMAIN,p6-ad-sign.byteimg.com,REJECT
-# [林柒 2026-10-06 移除] address=/p6-novel-sign.byteimg.com/# — 同上，正片签名CDN非广告
-DOMAIN,p9-ad-sign.byteimg.com,REJECT
-# [林柒 2026-10-06 移除] address=/p9-novel-sign.byteimg.com/# — 同上，正片签名CDN非广告
-DOMAIN,praisewindow.ugsdk.cn,REJECT
-# [Ekko 2026-10-29 解除拦截] address=/security-lq.snssdk.com/
-DOMAIN,sf3-ttcdn-tos.pstatp.com,REJECT
-DOMAIN,tnc0-aliec2.zijieapi.com,REJECT
-DOMAIN,tnc0-alisc1.zijieapi.com,REJECT
-DOMAIN,tnc3-aliec2.zijieapi.com,REJECT
-DOMAIN,tnc3-alisc1.zijieapi.com,REJECT
-# [Ekko 2026-10-29 解除拦截] address=/tnc3-bjlgy.snssdk.com/
-DOMAIN,v11-reading-ad.qznovelvod.com,REJECT
-DOMAIN,v13-reading-ad.qznovelvod.com,REJECT
-DOMAIN,v26-reading-ad.qznovelvod.com,REJECT
-DOMAIN,v5-bd-daily-reading-ad.qznovelvod.com,REJECT
-DOMAIN,v5-reading-ad.qznovelvod.com,REJECT
-DOMAIN,v5-se-sjy-daily-reading-ad.qznovelvod.com,REJECT
-DOMAIN,v6-reading-ad.qznovelvod.com,REJECT
-DOMAIN,v9-reading-ad.qznovelvod.com,REJECT
-DOMAIN,v96-reading-ad.qznovelvod.com,REJECT
-# [Ekko 2026-10-29 解除拦截] address=/vas-lf-x.snssdk.com/
-# [林柒 2026-10-06 移除] address=/volcengineapi.com/# — 火山引擎API主域，实测牵连
-#   zx-vod-fq.bytegslb.com(正片CDN) 等正常业务域名，广告子域已由其余精确规则覆盖
-DOMAIN,webcast5-open-hl.douyin.com.c.dsa.cdnbuild.net,REJECT
-DOMAIN,webcast5-open-hl.douyin.com,REJECT
-
-
-# ═══════════════════════════════════════════
-# 来源：home-dns-adblock/config/adblock-extra.conf
-# ═══════════════════════════════════════════
-# ============================================================
-# 手工精挑补充规则（2026-10-05 添加）
-# 来源：本机 dnsmasq 实测日志分析（queries.log 238,094 行 / 1,991 个唯一域名）
-# 加规则原则：只取「上报 / 统计 / 追踪」类
-#            绝不碰「播放 / 支付 / 定位 / 系统服务 / 云基础设施」
-# ============================================================
-
-# ---------- ① DoH 加固：强制 App 回落到本机 DNS ----------
-# 日志实测 19:14:02 出现（来源手机 100.64.0.2）
-# App 走加密 DNS 时解析完全不经过本机 → 拦不住也看不见
-# 拦掉后 App 会回落到系统 DNS（= 本机 dnsmasq），拦截覆盖面变大
-DOMAIN,dns.alidns.com,REJECT
-DOMAIN,_dns.resolver.arpa,REJECT
-
-# ---------- ② 番茄小说 埋点上报（纯统计，无副作用）----------
-# 实测 257 / 151 / 35 / 35 次，最后 19:13 仍活跃
-DOMAIN,log5-applog-hl.fqnovel.com,REJECT
-DOMAIN,rtlog5-applog-hl.fqnovel.com,REJECT
-DOMAIN,rtlog3-applog-hl.fqnovel.com,REJECT
-DOMAIN,mon11-misc-hl.fqnovel.com,REJECT
-
-# ---------- ③ 小红书 埋点 + 广告素材 ----------
-# lng / spider-tracker 实测 98 / 61 次，最后 19:14 仍活跃
-DOMAIN,lng.xiaohongshu.com,REJECT
-DOMAIN,spider-tracker.xiaohongshu.com,REJECT
-DOMAIN,apm-native.xiaohongshu.com,REJECT
-DOMAIN,ads-vp5.xhscdn.com,REJECT
-
-# ---------- ④ 友盟统计（多个 App 共用的埋点）----------
-# 注意：utoken.umeng.com 故意不拦（疑似推送鉴权，拦了可能收不到推送）
-DOMAIN,ulogs.umeng.com,REJECT
-DOMAIN,cnlogs.umeng.com,REJECT
-DOMAIN,errnewlog.umeng.com,REJECT
-DOMAIN,ossnt-errlog.umeng.com,REJECT
-
-# ---------- ⑤ 穿山甲广告 SDK 日志 ----------
-DOMAIN,log-api.pangolin-sdk-toutiao.com,REJECT
-
-# ---------- ⑥ 红果短剧实测补漏（2026-10-14 17:02）----------
-# 来源：红果短剧 3 小时抓包（ARP MITM 双向劫持）+ 逐条比对规则库
-# ⚠️ 勘误（2026-10-14 17:20 复核）：② 段的 -hl 并非「误写」——公网实测
-#    log5-applog-hl.fqnovel.com 真能解析（且非泛解析，假域 zzz-fake123 查不到），
-#    是**有效规则，保留不删**。真实情况：抓包里 App 请求的是 -lf 系，
-#    而规则里只有 -hl → 属「漏拦」，这里补齐 -lf 系。
-# ⚠️ 关键：dnsmasq 的 address=/x/ 只在「标签边界」匹配，
-#    写 applog-lf.fqnovel.com 拦不住 log5-applog-lf.fqnovel.com（前面是 - 不是 .）→ 必须列全域名
-DOMAIN,log5-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 136 次，最活跃
-DOMAIN,log3-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 27 次
-DOMAIN,rtlog5-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 27 次
-DOMAIN,rtlog3-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 4 次
-DOMAIN,mon11-misc-lf.fqnovel.com,REJECT # # 番茄杂项上报 实测 26 次
-DOMAIN,mon3-misc-lf.fqnovel.com,REJECT # # 番茄杂项上报 实测 2 次
-# [Ekko 2026-10-29 解除拦截] address=/abtest3-misc-hl.zijieapi.com/    # 字节 AB 实验上报
-# [Ekko 2026-10-29 解除拦截] address=/thanos.zijieapi.com/    # 字节监控上报
-# [Ekko 2026-10-29 解除拦截] address=/mon.zijieapi.com/    # 字节监控上报
-# [Ekko 2026-10-29 解除拦截] address=/timon.zijieapi.com/    # 字节监控上报
-# [Ekko 2026-10-29 解除拦截] address=/feedback-c.zijieapi.com/    # 字节反馈上报
-DOMAIN,tracker.xiaomixiaoai.com,REJECT # # 小米小爱追踪
-DOMAIN,aeventlog.beacon.qq.com,REJECT # # 腾讯埋点
-
-
-# ═══════════════════════════════════════════
-# 来源：home-dns-adblock/config/adblock-upstream.conf
+# 来源：home-dns-adblock/config（adblock-upstream.conf + adblock-extra.conf + adblock-fq.conf）
 # ═══════════════════════════════════════════
 # 上游广告规则（自动生成，勿手改）
-# 来源：AWAvenue-Ads-Rule
-# 生成：GitHub Actions 定时任务
-# 条数：949（已过白名单过滤）
-# 白名单保护：qznovelvod.com douyincdn.com douyinliving.com fqnovelpic.com douyinpic.com bytefcdn.com volcgslb.com bytegecko.com ixigua.com amemv.com is.snssdk.com gecko.snssdk.com api3-normal-sinfonlinea.fqnovel.com apple.com icloud.com tz.sec.xiaomi.com
-
+# 生成：GitHub Actions 定时任务（.github/workflows/sync-fanqie-module.yml）
+# 条数：1020（已过白名单过滤）
+# 精确 951 条 + 后缀 69 条
 DOMAIN,1500020991.vodplayer.wxamedia.com,REJECT
 DOMAIN,1500022744.vodplayer.wxamedia.com,REJECT
 DOMAIN,1500026601.vodplayer.wxamedia.com,REJECT
 DOMAIN,8rn1y79f02-1.algolianet.com,REJECT
+DOMAIN,_dns.resolver.arpa,REJECT
 DOMAIN,a.market.xiaomi.com,REJECT
 DOMAIN,a0.app.xiaomi.com,REJECT
 DOMAIN,aaid.umeng.com,REJECT
 DOMAIN,abtest-ch.snssdk.com,REJECT
+DOMAIN,activity-ag.awemeughun.com,REJECT
 DOMAIN,ad-api.4pyun.com,REJECT
 DOMAIN,ad-cdn.qingting.fm,REJECT
 DOMAIN,ad-cmp.hismarttv.com,REJECT
@@ -196,6 +55,7 @@ DOMAIN,ad.richmob.cn,REJECT
 DOMAIN,ad.shenshiads.com,REJECT
 DOMAIN,ad.shunchangzhixing.com,REJECT
 DOMAIN,ad.tencentmusic.com,REJECT
+DOMAIN,ad.toutiao.com,REJECT
 DOMAIN,ad.v3mh.com,REJECT
 DOMAIN,ad.winrar.com.cn,REJECT
 DOMAIN,ad.ximalaya.com,REJECT
@@ -239,6 +99,7 @@ DOMAIN,ads-sdk-api.ranfenghd.com,REJECT
 DOMAIN,ads-shopping.shouqianba.com,REJECT
 DOMAIN,ads-video-al.xhscdn.com,REJECT
 DOMAIN,ads-video-qc.xhscdn.com,REJECT
+DOMAIN,ads-vp5.xhscdn.com,REJECT
 DOMAIN,ads.95516.com,REJECT
 DOMAIN,ads.adfunlink.com,REJECT
 DOMAIN,ads.auctions.yahoo.com,REJECT
@@ -259,7 +120,13 @@ DOMAIN,ads.service.kugou.com,REJECT
 DOMAIN,ads.v3mh.com,REJECT
 DOMAIN,ads.youtube.com,REJECT
 DOMAIN,ads.zhinengxiyifang.cn,REJECT
+DOMAIN,ads3-normal-hl.zijieapi.com,REJECT
+DOMAIN,ads3-normal-lf.zijieapi.com,REJECT
+DOMAIN,ads3-normal-lq.zijieapi.com,REJECT
 DOMAIN,ads3-normal.zijieapi.com,REJECT
+DOMAIN,ads5-normal-hl.zijieapi.com,REJECT
+DOMAIN,ads5-normal-lf.zijieapi.com,REJECT
+DOMAIN,ads5-normal-lq.zijieapi.com,REJECT
 DOMAIN,ads5-normal.zijieapi.com,REJECT
 DOMAIN,adscdn.baidu.com,REJECT
 DOMAIN,adsdk.vivo.com.cn,REJECT
@@ -325,6 +192,7 @@ DOMAIN,adxserver.ad.cmvideo.cn,REJECT
 DOMAIN,adxstatic.vivo.com.cn,REJECT
 DOMAIN,aegis.qq.com,REJECT
 DOMAIN,aem.dentsuchina.cn,REJECT
+DOMAIN,aeventlog.beacon.qq.com,REJECT # # 腾讯埋点
 DOMAIN,afs.googlesyndication.com,REJECT
 DOMAIN,agn.aty.sohu.com,REJECT
 DOMAIN,aiseet.aa.atianqi.com,REJECT
@@ -357,9 +225,12 @@ DOMAIN,android.bugly.qq.com,REJECT
 DOMAIN,andrqd.play.aiseet.atianqi.com,REJECT
 DOMAIN,ap.dongdianqiu.com,REJECT
 DOMAIN,ap.dongqiudi.com,REJECT
+DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net,REJECT
 DOMAIN,apd-pcdnwxnat.teg.tencent-cloud.net,REJECT
 DOMAIN,apd-pcdnwxstat.teg.tencent-cloud.net,REJECT
 DOMAIN,api-access.pangolin-sdk-toutiao-b.com,REJECT
+DOMAIN,api-access.pangolin-sdk-toutiao.com,REJECT
+DOMAIN,api-access.pangolin-sdk-toutiao1.com,REJECT
 DOMAIN,api-access.pangolin-sdk-toutiao2.com,REJECT
 DOMAIN,api-access.pangolin-sdk-toutiao3.com,REJECT
 DOMAIN,api-access.pangolin-sdk-toutiao4.com,REJECT
@@ -376,6 +247,7 @@ DOMAIN,api.e.kuaishou.com,REJECT
 DOMAIN,api.fu.xcultur.com,REJECT
 DOMAIN,api.htp.hubcloud.com.cn,REJECT
 DOMAIN,api.hzsanjiaomao.com,REJECT
+DOMAIN,api.iegadp.qq.com,REJECT
 DOMAIN,api.installer.xiaomi.com,REJECT
 DOMAIN,api.jietuhb.com,REJECT
 DOMAIN,api.kingdata.ksyun.com,REJECT
@@ -385,6 +257,7 @@ DOMAIN,api.statsig.com,REJECT
 DOMAIN,api.touch-moblie.com,REJECT
 DOMAIN,api.yfanads.com,REJECT
 DOMAIN,apiyd.my91app.com,REJECT
+DOMAIN,apm-native.xiaohongshu.com,REJECT
 DOMAIN,apmplus.volces.com,REJECT
 DOMAIN,appcfg.v.qq.com,REJECT
 DOMAIN,applog-perf.uc.cn,REJECT
@@ -458,6 +331,7 @@ DOMAIN,cn-api-sec.anythinktech.com,REJECT
 DOMAIN,cn-api.anythinktech.com,REJECT
 DOMAIN,cn-da.anythinktech.com,REJECT
 DOMAIN,cn-tk.anythinktech.com,REJECT
+DOMAIN,cnlogs.umeng.com,REJECT
 DOMAIN,cnlogs.umengcloud.com,REJECT
 DOMAIN,collect.kugou.com,REJECT
 DOMAIN,commdata.v.qq.com,REJECT
@@ -486,8 +360,10 @@ DOMAIN,dc.sigmob.cn,REJECT
 DOMAIN,de.ad.gameley.com,REJECT
 DOMAIN,de.tynt.com,REJECT
 DOMAIN,diagnosis.ad.xiaomi.com,REJECT
+DOMAIN,dig.bdurl.net,REJECT
 DOMAIN,dlogs.bwton.com,REJECT
 DOMAIN,dm.toutiao.com,REJECT
+DOMAIN,dns.alidns.com,REJECT
 DOMAIN,domain.aishengji.com,REJECT
 DOMAIN,download.changhong.upgrade2.huan.tv,REJECT
 DOMAIN,downloadxml.changhong.upgrade2.huan.tv,REJECT
@@ -507,6 +383,7 @@ DOMAIN,engine.dcad01.com,REJECT
 DOMAIN,entry.baidu.com,REJECT
 DOMAIN,errlog.umeng.com,REJECT
 DOMAIN,errlogos.umeng.com,REJECT
+DOMAIN,errnewlog.umeng.com,REJECT
 DOMAIN,errnewlogos.umeng.com,REJECT
 DOMAIN,et-eus.w.inmobi.com,REJECT
 DOMAIN,event.tradplusad.com,REJECT
@@ -615,6 +492,7 @@ DOMAIN,ks-p2p.pull.yximgs.com,REJECT
 DOMAIN,ks.ferlytc.com,REJECT
 DOMAIN,ks.pull.yximgs.com,REJECT
 DOMAIN,kwpush.kuwo.cn,REJECT
+DOMAIN,l2-toutiao-quic-ipv6-ml.gslb.ksyuncdn.com,REJECT
 DOMAIN,l6.fancyapi.com,REJECT
 DOMAIN,launcher.smart-tv.cn,REJECT
 DOMAIN,launcherimg.smart-tv.cn,REJECT
@@ -631,10 +509,12 @@ DOMAIN,lives.l.aiseet.atianqi.com,REJECT
 DOMAIN,lives.l.ott.video.qq.com,REJECT
 DOMAIN,livewebbs2pcdn.msstatic.com,REJECT
 DOMAIN,lm10111.jtrincc.cn,REJECT
+DOMAIN,lng.xiaohongshu.com,REJECT
 DOMAIN,loading-cmp.hismarttv.com,REJECT
 DOMAIN,log-api-mn.huxiu.com,REJECT
 DOMAIN,log-api.huxiu.com,REJECT
 DOMAIN,log-api.pangolin-sdk-toutiao-b.com,REJECT
+DOMAIN,log-api.pangolin-sdk-toutiao.com,REJECT
 DOMAIN,log-auth.zztfly.com,REJECT
 DOMAIN,log-sdk.gifshow.com,REJECT
 DOMAIN,log-sdk.ksapisrv.com,REJECT
@@ -660,6 +540,9 @@ DOMAIN,log.vcgame.cn,REJECT
 DOMAIN,log.web.kugou.com,REJECT
 DOMAIN,log.zijieapi.com,REJECT
 DOMAIN,log1.cmpassport.com,REJECT
+DOMAIN,log3-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 27 次
+DOMAIN,log5-applog-hl.fqnovel.com,REJECT
+DOMAIN,log5-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 136 次，最活跃
 DOMAIN,logbak.hicloud.com,REJECT
 DOMAIN,logrcv.aiclk.com,REJECT
 DOMAIN,logrcv.yunxish.com,REJECT
@@ -689,6 +572,12 @@ DOMAIN,metrika.yandex.ru,REJECT
 DOMAIN,mi.gdt.qq.com,REJECT
 DOMAIN,miav-cse.avlyun.com,REJECT
 DOMAIN,mini-prog-drm.vodplayvideo.net,REJECT
+DOMAIN,minigame3-normal-hl.zijieapi.com,REJECT
+DOMAIN,minigame3-normal-lf.zijieapi.com,REJECT
+DOMAIN,minigame3-normal-lq.zijieapi.com,REJECT
+DOMAIN,minigame5-normal-hl.zijieapi.com,REJECT
+DOMAIN,minigame5-normal-lf.zijieapi.com,REJECT
+DOMAIN,minigame5-normal-lq.zijieapi.com,REJECT
 DOMAIN,mission-pub.smart-tv.cn,REJECT
 DOMAIN,miui-fxcse.avlyun.com,REJECT
 DOMAIN,mlog.bigda.com,REJECT
@@ -702,6 +591,9 @@ DOMAIN,mobile.events.data.microsoft.com,REJECT
 DOMAIN,mobilead.kuwo.cn,REJECT
 DOMAIN,mobilelog.kugou.com,REJECT
 DOMAIN,mobilelog.upqzfile.com,REJECT
+DOMAIN,mon11-misc-hl.fqnovel.com,REJECT
+DOMAIN,mon11-misc-lf.fqnovel.com,REJECT # # 番茄杂项上报 实测 26 次
+DOMAIN,mon3-misc-lf.fqnovel.com,REJECT # # 番茄杂项上报 实测 2 次
 DOMAIN,monitor-ads-test.huan.tv,REJECT
 DOMAIN,monitor-uu.play.aiseet.atianqi.com,REJECT
 DOMAIN,monitor.adxsenmeng.com,REJECT
@@ -718,6 +610,7 @@ DOMAIN,msdk.voiceads.cn,REJECT
 DOMAIN,msg-cmp.hismarttv.com,REJECT
 DOMAIN,mssdk.volces.com,REJECT
 DOMAIN,mssdk.zijieapi.com,REJECT
+DOMAIN,msync-im1-vip6-std.easemob.com,REJECT
 DOMAIN,mtj.baidu.com,REJECT
 DOMAIN,nadvideo2.baidu.com,REJECT
 DOMAIN,newvoice.chiq5.smart-tv.cn,REJECT
@@ -740,6 +633,7 @@ DOMAIN,openadapi.fancydsp.com,REJECT
 DOMAIN,optimus-ads.amap.com,REJECT
 DOMAIN,orbit.jd.com,REJECT
 DOMAIN,oss.cdn.aiclk.com,REJECT
+DOMAIN,ossnt-errlog.umeng.com,REJECT
 DOMAIN,oth.eve.mdt.qq.com,REJECT
 DOMAIN,oth.str.mdt.qq.com,REJECT
 DOMAIN,otheve.play.aiseet.atianqi.com,REJECT
@@ -754,13 +648,16 @@ DOMAIN,p2pchunk-table.douyucdn.cn,REJECT
 DOMAIN,p2plive-ali.douyucdn.cn,REJECT
 DOMAIN,p2pupdate.gamedl.qq.com,REJECT
 DOMAIN,p2pupgrade.gamedl.qq.com,REJECT
+DOMAIN,p3-ad-sign.byteimg.com,REJECT
 DOMAIN,p3-be-pack-sign.pglstatp-toutiao.com,REJECT
 DOMAIN,p3-lm.adkwai.com,REJECT
 DOMAIN,p3-tt.byteimg.com,REJECT
 DOMAIN,p4-be-pack-sign.pglstatp-toutiao.com,REJECT
 DOMAIN,p5-be-pack-sign.pglstatp-toutiao.com,REJECT
+DOMAIN,p6-ad-sign.byteimg.com,REJECT
 DOMAIN,p6-be-pack-sign.pglstatp-toutiao.com,REJECT
 DOMAIN,p66-ad.adkwai.com,REJECT
+DOMAIN,p9-ad-sign.byteimg.com,REJECT
 DOMAIN,pagead2.googleadservices.com,REJECT
 DOMAIN,pagead2.googlesyndication.com,REJECT
 DOMAIN,paster-cmp.hismarttv.com,REJECT
@@ -780,6 +677,7 @@ DOMAIN,plbslog.umeng.com,REJECT
 DOMAIN,pms.mb.qq.com,REJECT
 DOMAIN,policy.video.ptqy.gitv.tv,REJECT
 DOMAIN,pos.baidu.com,REJECT
+DOMAIN,praisewindow.ugsdk.cn,REJECT
 DOMAIN,prod-mediate-events.applovin.com,REJECT
 DOMAIN,prom-sdkv2.jysper.net,REJECT
 DOMAIN,promotion-partner.kuaishou.com,REJECT
@@ -813,6 +711,10 @@ DOMAIN,rt.applovin.com,REJECT
 DOMAIN,rt.applvn.com,REJECT
 DOMAIN,rtb.adxsenmeng.com,REJECT
 DOMAIN,rtb.voiceads.cn,REJECT
+DOMAIN,rtlog3-applog-hl.fqnovel.com,REJECT
+DOMAIN,rtlog3-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 4 次
+DOMAIN,rtlog5-applog-hl.fqnovel.com,REJECT
+DOMAIN,rtlog5-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 27 次
 DOMAIN,s.amazon-adsystem.com,REJECT
 DOMAIN,s1.cdn-sg.advlion.com,REJECT
 DOMAIN,s8t.teads.tv,REJECT
@@ -857,6 +759,7 @@ DOMAIN,service.changhong.upgrade2.huan.tv,REJECT
 DOMAIN,service.vmos.cn,REJECT
 DOMAIN,sf16-static.i18n-pglstatp.com,REJECT
 DOMAIN,sf3-fe-tos.pglstatp-toutiao.com,REJECT
+DOMAIN,sf3-ttcdn-tos.pstatp.com,REJECT
 DOMAIN,shihuo-new.log.shihuocdn.cn,REJECT
 DOMAIN,shihuo.log.shihuocdn.cn,REJECT
 DOMAIN,shouji.sogou.com,REJECT
@@ -869,6 +772,7 @@ DOMAIN,smetrics.samsung.com,REJECT
 DOMAIN,sms.ads.oppomobile.com,REJECT
 DOMAIN,sngmta.qq.com,REJECT
 DOMAIN,snowflake.qq.com,REJECT
+DOMAIN,spider-tracker.xiaohongshu.com,REJECT
 DOMAIN,ssapi.anythinktech.com,REJECT
 DOMAIN,ssp.cloooud.com,REJECT
 DOMAIN,staging-notify.sec.miui.com,REJECT
@@ -918,14 +822,18 @@ DOMAIN,tmfmazu-wangka.m.qq.com,REJECT
 DOMAIN,tmfmazu.m.qq.com,REJECT
 DOMAIN,tmfsdk.m.qq.com,REJECT
 DOMAIN,tmfsdktcpv4.m.qq.com,REJECT
+DOMAIN,tnc0-aliec2.zijieapi.com,REJECT
+DOMAIN,tnc0-alisc1.zijieapi.com,REJECT
 DOMAIN,tnc0-bjlgy.zijieapi.com,REJECT
 DOMAIN,tnc3-aliec1.toutiaoapi.com,REJECT
 DOMAIN,tnc3-aliec2.bytedance.com,REJECT
 DOMAIN,tnc3-aliec2.snssdk.com,REJECT
 DOMAIN,tnc3-aliec2.toutiaoapi.com,REJECT
+DOMAIN,tnc3-aliec2.zijieapi.com,REJECT
 DOMAIN,tnc3-alisc1.bytedance.com,REJECT
 DOMAIN,tnc3-alisc1.snssdk.com,REJECT
 DOMAIN,tnc3-alisc1.toutiaoapi.com,REJECT
+DOMAIN,tnc3-alisc1.zijieapi.com,REJECT
 DOMAIN,tnc3-bjlgy.bytedance.com,REJECT
 DOMAIN,tnc3-bjlgy.snssdk.com,REJECT
 DOMAIN,tnc3-bjlgy.toutiaoapi.com,REJECT
@@ -945,6 +853,7 @@ DOMAIN,track.uc.cn,REJECT
 DOMAIN,tracker-prd.aldi.com.cn,REJECT
 DOMAIN,tracker.ai.xiaomi.com,REJECT
 DOMAIN,tracker.gitee.com,REJECT
+DOMAIN,tracker.xiaomixiaoai.com,REJECT # # 小米小爱追踪
 DOMAIN,tracking-adnet.vivo.com.cn,REJECT
 DOMAIN,tracking.miui.com,REJECT
 DOMAIN,tracking.rus.miui.com,REJECT
@@ -962,6 +871,7 @@ DOMAIN,udcm.yahoo.com,REJECT
 DOMAIN,uedas.qidian.com,REJECT
 DOMAIN,ulog-sdk.gifshow.com,REJECT
 DOMAIN,ulogjs.gifshow.com,REJECT
+DOMAIN,ulogs.umeng.com,REJECT
 DOMAIN,ulogs.umengcloud.com,REJECT
 DOMAIN,umengacs.m.taobao.com,REJECT
 DOMAIN,umengjmacs.m.taobao.com,REJECT
@@ -982,13 +892,22 @@ DOMAIN,v.110route.cn,REJECT
 DOMAIN,v.adintl.cn,REJECT
 DOMAIN,v.adx.hubcloud.com.cn,REJECT
 DOMAIN,v1-ad.video.yximgs.com,REJECT
+DOMAIN,v11-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v13-reading-ad.qznovelvod.com,REJECT
 DOMAIN,v2-ad.video.yximgs.com,REJECT
 DOMAIN,v2-api-channel-launcher.hismarttv.com,REJECT
 DOMAIN,v2.gdt.qq.com,REJECT
 DOMAIN,v2.reachmax.cn,REJECT
+DOMAIN,v26-reading-ad.qznovelvod.com,REJECT
 DOMAIN,v2mi.gdt.qq.com,REJECT
 DOMAIN,v3-ad.video.yximgs.com,REJECT
 DOMAIN,v3.gdt.qq.com,REJECT
+DOMAIN,v5-bd-daily-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v5-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v5-se-sjy-daily-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v6-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v9-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v96-reading-ad.qznovelvod.com,REJECT
 DOMAIN,vd6.l.qq.com,REJECT
 DOMAIN,vi.l.qq.com,REJECT
 DOMAIN,video-ad.sm.cn,REJECT
@@ -1008,6 +927,8 @@ DOMAIN,watson.microsoft.com,REJECT
 DOMAIN,watson.telemetry.microsoft.com,REJECT
 DOMAIN,wcp.taobao.com,REJECT
 DOMAIN,weather-community-drcn.weather.dbankcloud.cn,REJECT
+DOMAIN,webcast5-open-hl.douyin.com,REJECT
+DOMAIN,webcast5-open-hl.douyin.com.c.dsa.cdnbuild.net,REJECT
 DOMAIN,webstat.qiumibao.com,REJECT
 DOMAIN,webview.unityads.unity3d.com,REJECT
 DOMAIN,widgets.outbrain.com,REJECT
@@ -1043,19 +964,6 @@ DOMAIN,zeus.ad.xiaomi.com,REJECT
 DOMAIN,zhihu-web-analytics.zhihu.com,REJECT
 DOMAIN,zjres-ad.kajicam.com,REJECT
 DOMAIN,zxid-m.mobileservice.cn,REJECT
-
-DOMAIN-SUFFIX,pangle.io,REJECT
-DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
-DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
-DOMAIN-SUFFIX,wmzfylgdsz.com,REJECT
-DOMAIN-SUFFIX,doh.pub,REJECT
-DOMAIN-SUFFIX,comfylink.com,REJECT # # 广告 SDK 集群：sdktt.data / seeds-open / ipip-gl1 / cf-gl
-DOMAIN-SUFFIX,ndcpp.com,REJECT # # 广告 SDK：vc-mirror / vc-brain
-DOMAIN-SUFFIX,ydycdn.com,REJECT # # 随机子域广告 CDN（12 个随机子域）
-DOMAIN-SUFFIX,wuchuyun.com,REJECT # # 随机子域广告 CDN
-DOMAIN-SUFFIX,xinqiucc.com,REJECT # # 随机子域广告 CDN：sd-gl
-DOMAIN-SUFFIX,qrstuvwxyzab.com,REJECT # # 随机子域广告 CDN（域名本身就是键盘序，明显是广告平台）
-DOMAIN-SUFFIX,jomoxc.com,REJECT # # 随机子域广告域，整后缀拦截（低优先 / 可回滚）
 DOMAIN-SUFFIX,1rtb.com,REJECT
 DOMAIN-SUFFIX,8le8le.com,REJECT
 DOMAIN-SUFFIX,ad-scope.com,REJECT
@@ -1075,6 +983,8 @@ DOMAIN-SUFFIX,bianxian.com,REJECT
 DOMAIN-SUFFIX,chiq-cloud.com,REJECT
 DOMAIN-SUFFIX,cloooud.com,REJECT
 DOMAIN-SUFFIX,cnzz.com,REJECT
+DOMAIN-SUFFIX,comfylink.com,REJECT # # 广告 SDK 集群：sdktt.data / seeds-open / ipip-gl1 / cf-gl
+DOMAIN-SUFFIX,doh.pub,REJECT
 DOMAIN-SUFFIX,doubleclick-cn.net,REJECT
 DOMAIN-SUFFIX,fancyapi.com,REJECT
 DOMAIN-SUFFIX,flurry.com,REJECT
@@ -1087,6 +997,7 @@ DOMAIN-SUFFIX,hanlanad.com,REJECT
 DOMAIN-SUFFIX,hexagon-analytics.com,REJECT
 DOMAIN-SUFFIX,iyfbodn.com,REJECT
 DOMAIN-SUFFIX,jiguang.cn,REJECT
+DOMAIN-SUFFIX,jomoxc.com,REJECT # # 随机子域广告域，整后缀拦截（低优先 / 可回滚）
 DOMAIN-SUFFIX,jpush.cn,REJECT
 DOMAIN-SUFFIX,jpush.io,REJECT
 DOMAIN-SUFFIX,litchiads.com,REJECT
@@ -1094,8 +1005,13 @@ DOMAIN-SUFFIX,log-report.com,REJECT
 DOMAIN-SUFFIX,medproad.com,REJECT
 DOMAIN-SUFFIX,micro-xdb.com,REJECT
 DOMAIN-SUFFIX,moatads.com,REJECT
+DOMAIN-SUFFIX,ndcpp.com,REJECT # # 广告 SDK：vc-mirror / vc-brain
+DOMAIN-SUFFIX,pangle.io,REJECT
 DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT
+DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
+DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
 DOMAIN-SUFFIX,pkoplink.com,REJECT
+DOMAIN-SUFFIX,qrstuvwxyzab.com,REJECT # # 随机子域广告 CDN（域名本身就是键盘序，明显是广告平台）
 DOMAIN-SUFFIX,samsungads.com,REJECT
 DOMAIN-SUFFIX,saxysec.com,REJECT
 DOMAIN-SUFFIX,sigmob.com,REJECT
@@ -1107,9 +1023,13 @@ DOMAIN-SUFFIX,ubixioe.com,REJECT
 DOMAIN-SUFFIX,uhabo.com,REJECT
 DOMAIN-SUFFIX,vlion.cn,REJECT
 DOMAIN-SUFFIX,vungle.com,REJECT
+DOMAIN-SUFFIX,wmzfylgdsz.com,REJECT
+DOMAIN-SUFFIX,wuchuyun.com,REJECT # # 随机子域广告 CDN
 DOMAIN-SUFFIX,wwads.cn,REJECT
+DOMAIN-SUFFIX,xinqiucc.com,REJECT # # 随机子域广告 CDN：sd-gl
 DOMAIN-SUFFIX,xlviiirdr.com,REJECT
 DOMAIN-SUFFIX,xlviirdr.com,REJECT
 DOMAIN-SUFFIX,xycdn.com,REJECT
+DOMAIN-SUFFIX,ydycdn.com,REJECT # # 随机子域广告 CDN（12 个随机子域）
 DOMAIN-SUFFIX,yfanads.com,REJECT
 DOMAIN-SUFFIX,zhangyuyidong.cn,REJECT
