@@ -30,19 +30,24 @@ Shadowrocket 的 `[URL Rewrite]` 与 `URL-REGEX` **只有在该域名被 MITM �
 等）就是在解析域名之后、建立 TCP 连接之前拒绝，**不依赖 MITM**，也不走 `[URL Rewrite]`。这是 Shadowrocket
 最「底层」的拦截机制。
 
-**`[Host]` 段（`*.example.com = 0.0.0.0`）是 Surge 语法，非 Shadowrocket 模块官方段**——官方无公开仓库/文档
+**`[Host]` 段（`域名 = server:127.0.0.1`）是 Surge 语法，非 Shadowrocket 模块官方段**——官方无公开仓库/文档
 （`github.com/shadowrocket/Shadowrocket` 404）；类官方站 shadowrocket.vip 主页只讲规则与 URL Rewrite，不提
 `[Host]`；真实模块集合（deezertidal 200+ 个模块、blackmatrix7）均**零使用** `[Host]`。**但 3.43 起用户决策
-试引入**：把「纯 REJECT」且可无损表达的域名（`DOMAIN-SUFFIX`→`*.X`、`DOMAIN`→`X`）映射到 `0.0.0.0` + `::`，
-对应 `[Rule]` 行**保留作兜底**（若本段在你的版本里未被识别，`[Rule]` REJECT 仍在域名层拦截，广告不会回潮）。
-**真机验证本段是否生效**（请求记录里命中表现为「连接 0.0.0.0 / :: 失败」）；不生效则删掉 `[Host]` 段回退，
-本段生效且确认后再移除被覆盖的 `[Rule]` 行。
+试引入，2026-11-27 起 FanQieNovel.module 全量改用此写法**：所有「纯 REJECT」域名（精确主机 + 注册域）
+统一映射到 `server:127.0.0.1`，**不再保留 `[Rule]` 段**（用户原话：当时不知道 DNS 拦截写法才用 `[Rule]`，
+现在知道了就全改）。
+**实测坑：纯 IP 写法（`X = 127.0.0.1` / `X = 0.0.0.0` / `::`）不生效，必须 `server:` 前缀**——
+FanQieNovel.module 曾因纯 IP 写法无效而整段迁回 `[Rule]`（见 commit 8312968）。
+**真机验证本段是否生效**（请求记录里命中表现为「连接 127.0.0.1 失败」）；异常时整体回退到 `[Rule]` REJECT。
 
-- `[Host]` 只会做「整域后缀匹配」（`*.domain.com` 匹配全部子域），**表达不了主机前缀通配**
-  （`p?-novel.byteimg.com`、`p*.douyinpic.com`、`v5-se*-reading-video.qznovelvod.com`）——这类**仍留 `[Rule]`**，
-  不得硬扩成 `*.byteimg.com`（会违反上面「共用 CDN 族禁止整域 REJECT」，连带屏蔽正常封面/头像/商品图）。
-- `[Host]` 映射 `0.0.0.0` 只等价于「连接失败」，**丢失** `REJECT-DICT` / `REJECT-200` / `REJECT-ARRAY` 的
-  响应级语义（部分 SDK 靠它们避免报错/重试循环），故这三类动作的规则**仍留 `[Rule]`**。
+- `[Host]` 对注册域做「整域后缀匹配」（`domain.com` 匹配该域及全部子域），但**表达不了主机前缀通配**
+  （`p?-novel.byteimg.com`、`p*.douyinpic.com`、`v5-se*-reading-video.qznovelvod.com`）——这类若出现，
+  不得硬扩成 `*.byteimg.com`（会违反上面「共用 CDN 族禁止整域 REJECT」，连带屏蔽正常封面/头像/商品图），
+  需按具体域名逐条列。
+- `[Host]` 映射 `server:127.0.0.1` 只等价于「连接失败」，**丢失** `REJECT-DICT` / `REJECT-200` / `REJECT-ARRAY` 的
+  响应级语义（部分 SDK 靠它们避免报错/重试循环），故这三类动作的域名**不可**用本写法。
+- Quantumult X 无 `[Host]` 段语法，`QuantumultX/FanQieNovel.list` 仍用 `DOMAIN/DOMAIN-SUFFIX + REJECT`
+  （同源同规则集，仅语法载体不同）。
 
 ## 规则编写原则
 

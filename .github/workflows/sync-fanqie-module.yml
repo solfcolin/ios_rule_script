@@ -51,7 +51,7 @@ jobs:
 
       - name: 安全检查（防上游结构变化产出空规则）
         run: |
-          MOD_COUNT="$(grep -cE '^(DOMAIN,|DOMAIN-SUFFIX,)' Shadowrocket/module/FanQieNovel.module)"
+          MOD_COUNT="$(grep -cE '^[^#].* = server:127\.0\.0\.1' Shadowrocket/module/FanQieNovel.module)"
           QX_COUNT="$(grep -cE '^(DOMAIN,|DOMAIN-SUFFIX,)' QuantumultX/FanQieNovel.list)"
           echo "模块规则数: $MOD_COUNT，QX 分流规则数: $QX_COUNT"
           if [ "$MOD_COUNT" -lt 100 ] || [ "$QX_COUNT" -lt 100 ]; then

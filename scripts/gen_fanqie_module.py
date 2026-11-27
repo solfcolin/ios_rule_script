@@ -50,20 +50,37 @@ def classify(domains):
     return exact, suffix
 
 
+# [Host] 段全量黑洞目标（用户实测修正）：
+#   早期 `X = 127.0.0.1` / `0.0.0.0` 纯 IP 写法实测不生效；正确写法是 `server:127.0.0.1`。
+#   按此规则把上游全部域名（DOMAIN 精确主机 + DOMAIN-SUFFIX 注册域）统一映射到 [Host] 段。
+#   [Host] 对注册域做整域后缀匹配，覆盖全部 `*.` 子域。
+#   对应 [Rule] 行全部保留作兜底，真机确认 [Host] 生效后再移除。
+HOST_TARGET = "server:127.0.0.1"
+
+
 RULE_RE = re.compile(r"^(DOMAIN(?:-SUFFIX)?),([^,]+),REJECT\s*(?:#\s*(.*))?$")
+HOST_RE = re.compile(r"^([^#=]+?)\s*=\s*server:127\.0\.0\.1\s*(?:#\s*(.*))?$")
 
 
 def read_existing(path):
-    """读取现有模块的规则集（剥行尾注释后比较）与每域名行尾注释（继承用）。"""
+    """读取现有规则集（新 [Host] 行 + 旧 [Rule] REJECT 行兼容）与行尾注释。"""
     rules, annotations = set(), {}
     if os.path.exists(path):
         with open(path, encoding="utf-8") as f:
             for raw in f:
-                m = RULE_RE.match(raw.strip())
+                line = raw.strip()
+                m = RULE_RE.match(line)
                 if m:
                     rules.add(f"{m.group(1)},{m.group(2)},REJECT")
                     if m.group(3):
                         annotations[m.group(2)] = m.group(3)
+                    continue
+                m = HOST_RE.match(line)
+                if m:
+                    domain = m.group(1).strip()
+                    rules.add(f"HOST,{domain}")
+                    if m.group(2):
+                        annotations[domain] = m.group(2)
     return rules, annotations
 
 
@@ -82,20 +99,14 @@ def build_module(exact, suffix, version, annotations):
     total = len(exact) + len(suffix)
     v = version
 
-    def rule(kind, d):
-        line = f"{kind},{d},REJECT"
-        if d in annotations:  # 继承现有模块的行尾手工注释
-            line += f" # {annotations[d]}"
-        return line
-
     lines = [
         "#!name=番茄小说 @zqzess",
         f"#!desc=番茄小说/红果 DNS 广告屏蔽, version = {v}",
-        "#!desc=（[Rule] DNS 层拦截，源自 home-dns-adblock/config）",
-        "[Rule]",
-        "# 全部走 [Rule] DNS 层拦截，不依赖 [Host] 映射、不依赖 MITM。",
-        "#   完整广告主机名 → `DOMAIN,X,REJECT` 精确拦（如 ads3-normal-hl.zijieapi.com）。",
-        "#   注册域 → `DOMAIN-SUFFIX,X,REJECT` 拦 X 及全部子域（如 googleadservices.com）。",
+        "#!desc=（[Host] DNS 层拦截，源自 home-dns-adblock/config）",
+        "[Host]",
+        "# [Host] DNS 层拦截：`域名 = server:127.0.0.1`，域名解析即指向本机回环、连接失败，不依赖 MITM。",
+        "#   用户实测：早期纯 IP 写法（`X = 127.0.0.1` / `0.0.0.0` / `::`）不生效，须 `server:` 前缀。",
+        "#   `DOMAIN` 精确主机 → `X`；`DOMAIN-SUFFIX` 注册域 → `X`，整域后缀匹配全部子域。",
         "# 白名单（正片/图床/基础设施）已剔除（来源 whitelist）；`-reading-ad.qznovelvod.com` 广告视频子域故意保留（正片走 -reading-video）。",
         "# ═══════════════════════════════════════════",
         "# 来源：home-dns-adblock/config（adblock-upstream.conf + adblock-extra.conf + adblock-fq.conf）",
@@ -105,10 +116,11 @@ def build_module(exact, suffix, version, annotations):
         f"# 条数：{total}（已过白名单过滤）",
         f"# 精确 {len(exact)} 条 + 后缀 {len(suffix)} 条",
     ]
-    for d in exact:
-        lines.append(rule("DOMAIN", d))
-    for d in suffix:
-        lines.append(rule("DOMAIN-SUFFIX", d))
+    for d in exact + suffix:
+        line = f"{d} = {HOST_TARGET}"
+        if d in annotations:  # 继承现有模块的行尾手工注释
+            line += f" # {annotations[d]}"
+        lines.append(line)
     return "\n".join(lines) + "\n"
 
 
@@ -161,19 +173,20 @@ def main():
             sys.exit(1)
 
     exact, suffix = classify(domains)
-    new_rules = set(f"DOMAIN,{d},REJECT" for d in exact) | set(
+    module_rules = set(f"HOST,{d}" for d in exact + suffix)
+    qx_rules = set(f"DOMAIN,{d},REJECT" for d in exact) | set(
         f"DOMAIN-SUFFIX,{d},REJECT" for d in suffix
     )
 
-    # 模块
+    # 模块（全量 [Host] DNS 拦截，无 [Rule] 段）
     old_rules, annotations = read_existing(args.output)
-    version = resolve_version(args.output, new_rules)
+    version = resolve_version(args.output, module_rules)
     with open(args.output, "w", encoding="utf-8") as f:
         f.write(build_module(exact, suffix, version, annotations))
 
     # QX 分流文件（可选，各自独立跟踪版本）
     if args.output_qx:
-        version_qx = resolve_version(args.output_qx, new_rules)
+        version_qx = resolve_version(args.output_qx, qx_rules)
         with open(args.output_qx, "w", encoding="utf-8") as f:
             f.write(build_qx_list(exact, suffix, version_qx))
         print(
