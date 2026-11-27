@@ -4,7 +4,7 @@
 
 圈X 无「模块」概念，拆成两个入口，两份都要导入才能完整生效（共用 CDN 上的广告素材靠 .conf 的路径重写拦截，只导入 .list 会漏）：
 
-- [番茄小说广告屏蔽（分流/规则）](https://raw.githubusercontent.com/solfcolin/ios_rule_script/refs/heads/master/QuantumultX/FanQieNovel.list) — 导入到「分流」→「引用规则」，对应小火箭模块的 `[Rule]`。
+- [番茄小说广告屏蔽（分流/规则）](https://raw.githubusercontent.com/solfcolin/ios_rule_script/refs/heads/master/QuantumultX/FanQieNovel.list) — 导入到「分流」→「引用规则」，与小火箭模块的 `[Host]` DNS 拦截同源同规则集（QX 无 `[Host]` 语法，故用 `DOMAIN/DOMAIN-SUFFIX + REJECT`）。
 - [番茄小说广告屏蔽（重写/MITM）](https://raw.githubusercontent.com/solfcolin/ios_rule_script/refs/heads/master/QuantumultX/FanQieNovel.conf) — 导入到「重写」→「远程」，对应 `[URL Rewrite]` + `[MITM]`。
 
 ---

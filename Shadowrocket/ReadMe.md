@@ -33,7 +33,7 @@ hostname = ...            # 替换，会清空主配置和其他模块的 hostna
 ### 验证模块 MITM 是否真的吃上
 
 MITM 生效的唯一标志是**路径型规则开始命中**。用日志对比：
-- **域名型 REJECT**（如 `pglstatp-toutiao.com`）：SNI 阶段即可拦截，**不依赖 MITM**，一定生效；
+- **域名型拦截**（如 `pglstatp-toutiao.com = server:127.0.0.1`，或旧写法 `[Rule]` 的 `DOMAIN,...REJECT`）：解析/SNI 阶段即可拦截，**不依赖 MITM**，一定生效；
 - **路径型规则**（`URL-REGEX` / `URL Rewrite`，如 `byteimg.com/ad-app-package`）：必须先被 `[MITM] hostname`
   覆盖，内核才看得到路径。
 

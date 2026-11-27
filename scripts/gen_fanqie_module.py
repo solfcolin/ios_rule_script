@@ -11,12 +11,12 @@
         --output   Shadowrocket/module/FanQieNovel.module
 
 输入：三个 dnsmasq 风格配置文件（`address=/X/` 行，`#` 开头为注释）。
-输出：`[Rule]` 段模块 ——
-      域名标签数 > 2（完整主机名）→ `DOMAIN,X,REJECT`（精确拦）
-      域名标签数 == 2（注册域）   → `DOMAIN-SUFFIX,X,REJECT`（拦 X 及全部子域）
+输出：`[Host]` 段模块（`域名 = server:127.0.0.1`，DNS 层拦截，不依赖 MITM）——
+      域名标签数 > 2（完整主机名）→ `X = server:127.0.0.1`
+      域名标签数 == 2（注册域）   → `X = server:127.0.0.1`（整域后缀匹配全部子域）
+      若指定 --output-qx，另生成 Quantumult X 分流文件（QX 无 `[Host]` 语法，仍用 DOMAIN / DOMAIN-SUFFIX + REJECT）。
 
-版本规则：若生成的规则集与现有模块一致 → 版本号保持不变（幂等）；
-         若有变化 → minor+1（遵循仓库「改动即 bump version」惯例）。
+版本规则：版本 = 规则集最后变化日期；规则集无变化保持原日期（幂等），有变化置为今天。
 """
 import argparse
 import datetime
@@ -132,7 +132,7 @@ def build_qx_list(exact, suffix, version):
         f"# 生成时间：{version}（规则最后变化日；仅在规则集变化时重生成并更新）",
         "# 用法：Quantumult X「分流」-> 「引用规则」，作为 filter_remote 引入，REJECT 走 REJECT 策略组。",
         "#",
-        "# 上游广告规则（自动生成，勿手改；与模块同源同规则集）",
+        "# 上游广告规则（自动生成，勿手改；与 Shadowrocket 模块同源同规则集，QX 无 [Host] 语法故用 REJECT）",
         "# 生成：GitHub Actions 定时任务（.github/workflows/sync-fanqie-module.yml）",
         f"# 条数：{total}（{len(exact)} 精确 + {len(suffix)} 后缀）",
         "#",
