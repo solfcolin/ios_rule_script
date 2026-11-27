@@ -11,10 +11,7 @@
         --output   Shadowrocket/module/FanQieNovel.module
 
 输入：三个 dnsmasq 风格配置文件（`address=/X/` 行，`#` 开头为注释）。
-输出：`[Host]` + `[Rule]` 双段模块（DNS 层拦截，不依赖 MITM）——
-      无 AAAA 记录的域名 → `[Host]`（`域名 = server:127.0.0.1`，只拦 IPv4）
-      有 AAAA 记录的域名 → `[Rule]`（`DOMAIN/DOMAIN-SUFFIX + REJECT`，完整拦 v4+v6）
-      分流依据：scripts/fanqie_{noaaaa,aaaa}_domains.txt（用 114.114.114.114 全量解析生成，可刷新）。
+输出：`[Host]` 段模块（全量 `域名 = server:127.0.0.1`，DNS 层拦截，不依赖 MITM）。
       若指定 --output-qx，另生成 Quantumult X 分流文件（QX 无 `[Host]` 语法，仍用 DOMAIN / DOMAIN-SUFFIX + REJECT）。
 
 版本规则：版本 = 规则集最后变化日期；规则集无变化保持原日期（幂等），有变化置为今天。
@@ -51,35 +48,22 @@ def classify(domains):
     return exact, suffix
 
 
-# [Host] / [Rule] 双段拆分（用户实测 2026-11-27）：
-#   `server:127.0.0.1` 只拦 IPv4（A 记录）；有 AAAA（IPv6）记录的广告域名会从 IPv6 逃逸。
-#   故按解析结果分流：无 AAAA → [Host]（`域名 = server:127.0.0.1`），有 AAAA → [Rule]（`DOMAIN/DOMAIN-SUFFIX + REJECT`）。
-#   清单由 scripts/fanqie_{aaaa,noaaaa}_domains.txt 提供（用 114.114.114.114 全量解析生成，可重新跑脚本刷新）。
-#   用户实测：早期纯 IP 写法（`X = 127.0.0.1` / `0.0.0.0` / `::`）不生效，必须 `server:` 前缀。
+# [Host] 全量黑洞（用户实测 2026-11-27 最终决策）：
+#   `server:127.0.0.1` 统一用于全部域名（含曾有 AAAA（IPv6）记录的域名）——用户验证后决定不再拆 [Rule]。
+#   注：早期 `X = 127.0.0.1` / `0.0.0.0` 纯 IP 写法实测不生效，必须 `server:` 前缀。
+#   回退预案：若真机发现 server:127.0.0.1 拦不住 IPv6（有 AAAA 的域名从 IPv6 逃逸），
+#   可把有 AAAA 的域名回退到 [Rule]（DOMAIN/DOMAIN-SUFFIX + REJECT）；需要时用
+#   `dig @114.114.114.114 +short AAAA <域名>` 重新解析哪些域名有 AAAA（此前实测 342/1020 有）。
 HOST_TARGET = "server:127.0.0.1"
-AAAA_LIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fanqie_aaaa_domains.txt")
-NOAAAA_LIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fanqie_noaaaa_domains.txt")
-
-
-def load_domain_list(path):
-    """读取每行一个域名的清单文件。"""
-    if not os.path.exists(path):
-        return set()
-    with open(path, encoding="utf-8") as f:
-        return {ln.strip() for ln in f if ln.strip()}
 
 
 def split_by_ip_version(all_domains):
-    """按有无 AAAA 记录拆分：有 AAAA → [Rule]（REJECT），无 AAAA → [Host]（server:127.0.0.1）。"""
-    aaaa = load_domain_list(AAAA_LIST)
-    noaaaa = load_domain_list(NOAAAA_LIST)
-    # 交集为空校验：防清单漂移导致漏规则
-    overlap = aaaa & noaaaa
-    if overlap:
-        raise ValueError(f"AAAA/无AAAA 清单有交集，请重新生成：{sorted(overlap)[:5]}")
-    host_domains = {d for d in all_domains if d in noaaaa}
-    rule_domains = {d for d in all_domains if d in aaaa}
-    return host_domains, rule_domains
+    """全量统一进 [Host]（server:127.0.0.1）；[Rule] 段不再输出。
+
+    回退预案：若真机验证发现 server:127.0.0.1 拦不住 IPv6，改回
+    「有 AAAA → [Rule]，无 AAAA → [Host]」双段拆分即可（用 dig 重新解析生成清单）。
+    """
+    return set(all_domains), set()
 
 
 RULE_RE = re.compile(r"^(DOMAIN(?:-SUFFIX)?),([^,]+),REJECT\s*(?:#\s*(.*))?$")
@@ -120,12 +104,12 @@ def read_version(path):
 
 
 def build_module(host_domains, rule_domains, exact, suffix, version, annotations):
-    """产出 [Host]（无 AAAA）+ [Rule]（有 AAAA）双段模块。"""
-    total = len(host_domains) + len(rule_domains)
-    v = version
+    """产出全量 [Host] 段模块（含曾有 AAAA 的域名，统一 server:127.0.0.1）。
 
-    def kind_of(d):
-        return "DOMAIN" if d.count(".") >= 2 else "DOMAIN-SUFFIX"
+    参数保留 rule_domains/exact/suffix 以兼容「回退双段拆分」预案；当前 rule_domains 恒为空。
+    """
+    total = len(host_domains)
+    v = version
 
     def host_line(d):
         line = f"{d} = {HOST_TARGET}"
@@ -133,21 +117,15 @@ def build_module(host_domains, rule_domains, exact, suffix, version, annotations
             line += f" # {annotations[d]}"
         return line
 
-    def rule_line(d):
-        line = f"{kind_of(d)},{d},REJECT"
-        if d in annotations:
-            line += f" # {annotations[d]}"
-        return line
-
     lines = [
         "#!name=番茄小说 @zqzess",
         f"#!desc=番茄小说/红果 DNS 广告屏蔽, version = {v}",
-        "#!desc=（[Host] + [Rule] DNS 层拦截，源自 home-dns-adblock/config）",
+        "#!desc=（[Host] DNS 层拦截，源自 home-dns-adblock/config）",
         "[Host]",
         "# [Host] DNS 层拦截：`域名 = server:127.0.0.1`，域名解析即指向本机回环、连接失败，不依赖 MITM。",
-        "#   仅拦 IPv4（A 记录）；有 AAAA（IPv6）记录的域名放 [Rule]（见下）。",
         "#   用户实测：早期纯 IP 写法（`X = 127.0.0.1` / `0.0.0.0` / `::`）不生效，须 `server:` 前缀。",
-        "#   清单：scripts/fanqie_noaaaa_domains.txt（无 AAAA）。",
+        "#   曾按 AAAA 拆 [Rule]（342 条有 IPv6），用户验证后决定全量统一 [Host]；",
+        "#   若真机发现 IPv6 逃逸，可据 scripts/fanqie_aaaa_domains.txt 回退有 AAAA 域名到 [Rule]。",
         "# 白名单（正片/图床/基础设施）已剔除（来源 whitelist）；`-reading-ad.qznovelvod.com` 广告视频子域故意保留（正片走 -reading-video）。",
         "# ═══════════════════════════════════════════",
         "# 来源：home-dns-adblock/config（adblock-upstream.conf + adblock-extra.conf + adblock-fq.conf）",
@@ -155,19 +133,9 @@ def build_module(host_domains, rule_domains, exact, suffix, version, annotations
         "# 上游广告规则（自动生成，勿手改）",
         "# 生成：GitHub Actions 定时任务（.github/workflows/sync-fanqie-module.yml）",
         f"# 条数：{total}（已过白名单过滤）",
-        f"# [Host] {len(host_domains)} 条（无 AAAA）+ [Rule] {len(rule_domains)} 条（有 AAAA）",
     ]
     for d in sorted(host_domains):
         lines.append(host_line(d))
-    lines.append("")
-    lines.extend([
-        "[Rule]",
-        "# [Rule] DNS 层拦截：`DOMAIN/DOMAIN-SUFFIX + REJECT`，针对有 AAAA（IPv6）记录的域名——",
-        "#   `server:127.0.0.1` 只拦 IPv4，IPv6 会逃逸，故这些域名用 [Rule] 完整拦截（DNS 层，不依赖 MITM）。",
-        f"#   清单：scripts/fanqie_aaaa_domains.txt（{len(rule_domains)} 条）。",
-    ])
-    for d in sorted(rule_domains):
-        lines.append(rule_line(d))
     return "\n".join(lines) + "\n"
 
 
@@ -222,12 +190,6 @@ def main():
     exact, suffix = classify(domains)
     all_domains = set(exact) | set(suffix)
     host_domains, rule_domains = split_by_ip_version(all_domains)
-    # 清单覆盖校验：上游域名必须全部落在两清单之一（防清单漂移/上游新增域未解析）
-    unlisted = all_domains - host_domains - rule_domains
-    if unlisted:
-        print(f"警告：{len(unlisted)} 个域名不在 AAAA 清单中，默认归 [Host]（可重新生成清单）：",
-              file=sys.stderr)
-        host_domains |= unlisted
     module_rules = set(f"HOST,{d}" for d in host_domains) | set(
         f"{'DOMAIN' if d.count('.') >= 2 else 'DOMAIN-SUFFIX'},{d},REJECT" for d in rule_domains
     )
@@ -235,14 +197,13 @@ def main():
         f"DOMAIN-SUFFIX,{d},REJECT" for d in suffix
     )
 
-    # 模块（无 AAAA → [Host]，有 AAAA → [Rule]）
+    # 模块（全量 [Host] DNS 拦截）
     old_rules, annotations = read_existing(args.output)
     version = resolve_version(args.output, module_rules)
     with open(args.output, "w", encoding="utf-8") as f:
         f.write(build_module(host_domains, rule_domains, exact, suffix, version, annotations))
     print(
-        f"模块：{len(host_domains)} 条 [Host]（无 AAAA）+ {len(rule_domains)} 条 [Rule]（有 AAAA）"
-        f" = {len(host_domains) + len(rule_domains)} 条，version={version}"
+        f"模块：{len(host_domains)} 条 [Host] = {len(host_domains)} 条，version={version}"
     )
 
     # QX 分流文件（可选，各自独立跟踪版本）
