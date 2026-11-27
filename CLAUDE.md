@@ -33,12 +33,17 @@ Shadowrocket 的 `[URL Rewrite]` 与 `URL-REGEX` **只有在该域名被 MITM �
 **`[Host]` 段（`域名 = server:127.0.0.1`）是 Surge 语法，非 Shadowrocket 模块官方段**——官方无公开仓库/文档
 （`github.com/shadowrocket/Shadowrocket` 404）；类官方站 shadowrocket.vip 主页只讲规则与 URL Rewrite，不提
 `[Host]`；真实模块集合（deezertidal 200+ 个模块、blackmatrix7）均**零使用** `[Host]`。**但 3.43 起用户决策
-试引入，2026-11-27 起 FanQieNovel.module 全量改用此写法**：所有「纯 REJECT」域名（精确主机 + 注册域）
-统一映射到 `server:127.0.0.1`，**不再保留 `[Rule]` 段**（用户原话：当时不知道 DNS 拦截写法才用 `[Rule]`，
-现在知道了就全改）。
+试引入，2026-11-27 起 FanQieNovel.module 改用此写法**。
 **实测坑：纯 IP 写法（`X = 127.0.0.1` / `X = 0.0.0.0` / `::`）不生效，必须 `server:` 前缀**——
 FanQieNovel.module 曾因纯 IP 写法无效而整段迁回 `[Rule]`（见 commit 8312968）。
-**真机验证本段是否生效**（请求记录里命中表现为「连接 127.0.0.1 失败」）；异常时整体回退到 `[Rule]` REJECT。
+
+**双段拆分（2026-11-27 起，用户实测）**：`server:127.0.0.1` 只拦 **IPv4（A 记录）**；有 **AAAA（IPv6）** 记录的
+广告域名会从 IPv6 逃逸。故按解析结果分流（用 114.114.114.114 全量解析生成清单）：
+- **无 AAAA** → `[Host]`（`域名 = server:127.0.0.1`）；
+- **有 AAAA** → `[Rule]`（`DOMAIN/DOMAIN-SUFFIX + REJECT`，完整拦截 v4+v6）。
+清单：`scripts/fanqie_{noaaaa,aaaa}_domains.txt`（678 + 342 = 1020，用 `dig` 可重新生成刷新）。
+
+**真机验证本段是否生效**（请求记录里命中表现为「连接 127.0.0.1 失败」）；异常时把对应域名回退到 `[Rule]` REJECT。
 
 - `[Host]` 对注册域做「整域后缀匹配」（`domain.com` 匹配该域及全部子域），但**表达不了主机前缀通配**
   （`p?-novel.byteimg.com`、`p*.douyinpic.com`、`v5-se*-reading-video.qznovelvod.com`）——这类若出现，

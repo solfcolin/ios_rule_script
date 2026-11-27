@@ -1,10 +1,11 @@
 #!name=番茄小说 @zqzess
 #!desc=番茄小说/红果 DNS 广告屏蔽, version = 2026-11-27
-#!desc=（[Host] DNS 层拦截，源自 home-dns-adblock/config）
+#!desc=（[Host] + [Rule] DNS 层拦截，源自 home-dns-adblock/config）
 [Host]
 # [Host] DNS 层拦截：`域名 = server:127.0.0.1`，域名解析即指向本机回环、连接失败，不依赖 MITM。
+#   仅拦 IPv4（A 记录）；有 AAAA（IPv6）记录的域名放 [Rule]（见下）。
 #   用户实测：早期纯 IP 写法（`X = 127.0.0.1` / `0.0.0.0` / `::`）不生效，须 `server:` 前缀。
-#   `DOMAIN` 精确主机 → `X`；`DOMAIN-SUFFIX` 注册域 → `X`，整域后缀匹配全部子域。
+#   清单：scripts/fanqie_noaaaa_domains.txt（无 AAAA）。
 # 白名单（正片/图床/基础设施）已剔除（来源 whitelist）；`-reading-ad.qznovelvod.com` 广告视频子域故意保留（正片走 -reading-video）。
 # ═══════════════════════════════════════════
 # 来源：home-dns-adblock/config（adblock-upstream.conf + adblock-extra.conf + adblock-fq.conf）
@@ -12,15 +13,13 @@
 # 上游广告规则（自动生成，勿手改）
 # 生成：GitHub Actions 定时任务（.github/workflows/sync-fanqie-module.yml）
 # 条数：1020（已过白名单过滤）
-# 精确 951 条 + 后缀 69 条
-1500020991.vodplayer.wxamedia.com = server:127.0.0.1
-1500022744.vodplayer.wxamedia.com = server:127.0.0.1
-1500026601.vodplayer.wxamedia.com = server:127.0.0.1
+# [Host] 678 条（无 AAAA）+ [Rule] 342 条（有 AAAA）
+1rtb.com = server:127.0.0.1
+8le8le.com = server:127.0.0.1
 8rn1y79f02-1.algolianet.com = server:127.0.0.1
 _dns.resolver.arpa = server:127.0.0.1
 a.market.xiaomi.com = server:127.0.0.1
 a0.app.xiaomi.com = server:127.0.0.1
-aaid.umeng.com = server:127.0.0.1
 abtest-ch.snssdk.com = server:127.0.0.1
 activity-ag.awemeughun.com = server:127.0.0.1
 ad-api.4pyun.com = server:127.0.0.1
@@ -28,14 +27,13 @@ ad-cdn.qingting.fm = server:127.0.0.1
 ad-cmp.hismarttv.com = server:127.0.0.1
 ad-download.hismarttv.com = server:127.0.0.1
 ad-files.4pyun.com = server:127.0.0.1
+ad-scope.com = server:127.0.0.1
 ad-scope.com.cn = server:127.0.0.1
 ad-sdk-config.youdao.com = server:127.0.0.1
 ad-splash-tracking.hktvmall.com = server:127.0.0.1
 ad-splash.hktvmall.com = server:127.0.0.1
-ad.12306.cn = server:127.0.0.1
 ad.51wnl.com = server:127.0.0.1
 ad.api.3g.youku.com = server:127.0.0.1
-ad.bn.netease.com = server:127.0.0.1
 ad.bwton.com = server:127.0.0.1
 ad.cctv.com = server:127.0.0.1
 ad.cyapi.cn = server:127.0.0.1
@@ -46,64 +44,50 @@ ad.hpplay.cn = server:127.0.0.1
 ad.iot.360.cn = server:127.0.0.1
 ad.jia.360.cn = server:127.0.0.1
 ad.life.360.cn = server:127.0.0.1
-ad.maoyan.com = server:127.0.0.1
 ad.partner.gifshow.com = server:127.0.0.1
 ad.player.baidu.com = server:127.0.0.1
-ad.qingting.fm = server:127.0.0.1
-ad.qq.com = server:127.0.0.1
 ad.richmob.cn = server:127.0.0.1
 ad.shenshiads.com = server:127.0.0.1
 ad.shunchangzhixing.com = server:127.0.0.1
-ad.tencentmusic.com = server:127.0.0.1
 ad.toutiao.com = server:127.0.0.1
-ad.v3mh.com = server:127.0.0.1
 ad.winrar.com.cn = server:127.0.0.1
 ad.ximalaya.com = server:127.0.0.1
 ad.xunkids.com = server:127.0.0.1
-ad.zijieapi.com = server:127.0.0.1
-ad4.sina.com.cn = server:127.0.0.1
 adapi.izuiyou.com = server:127.0.0.1
 adapi.yynetwk.com = server:127.0.0.1
-adash-emas.cn-hangzhou.aliyuncs.com = server:127.0.0.1
 adashbc.ut.taobao.com = server:127.0.0.1
 adashx.m.taobao.com = server:127.0.0.1
-adashxgc.ut.taobao.com = server:127.0.0.1
 adbox.sina.com.cn = server:127.0.0.1
 adc.hpplay.cn = server:127.0.0.1
 adcdn.hpplay.cn = server:127.0.0.1
 adcdn.tencentmusic.com = server:127.0.0.1
 adclick.g.doubleclick.net = server:127.0.0.1
-adclick.tencentmusic.com = server:127.0.0.1
+adcolony.com = server:127.0.0.1
 addata.jd.com = server:127.0.0.1
 adeng.hpplay.cn = server:127.0.0.1
-adexp.chinaliftoff.io = server:127.0.0.1
 adexp.liftoff.io = server:127.0.0.1
 adexpo.tencentmusic.com = server:127.0.0.1
 adfilter.imtt.qq.com = server:127.0.0.1
 adguanggao.eee114.com = server:127.0.0.1
 adimg.uve.weibo.com = server:127.0.0.1
+adintl.cn = server:127.0.0.1
+adjust.cn = server:127.0.0.1
+adjust.com = server:127.0.0.1
 adks.hpplay.cn = server:127.0.0.1
 adlink-api.huan.tv = server:127.0.0.1
 adlog.vivo.com.cn = server:127.0.0.1
 adm.funshion.com = server:127.0.0.1
 adm.zhangyuyidong.cn = server:127.0.0.1
 admarketing.yahoo.net = server:127.0.0.1
+admobile.top = server:127.0.0.1
 adreq.vivo.com.cn = server:127.0.0.1
 ads-api-o.api.leiniao.com = server:127.0.0.1
 ads-api.twitter.com = server:127.0.0.1
-ads-img-al.xhscdn.com = server:127.0.0.1
-ads-img-bak.xhscdn.com = server:127.0.0.1
-ads-img-qc.xhscdn.com = server:127.0.0.1
-ads-marketing-vivofs.vivo.com.cn = server:127.0.0.1
-ads-sdk-api.ranfenghd.com = server:127.0.0.1
 ads-shopping.shouqianba.com = server:127.0.0.1
-ads-video-al.xhscdn.com = server:127.0.0.1
 ads-video-qc.xhscdn.com = server:127.0.0.1
-ads-vp5.xhscdn.com = server:127.0.0.1
 ads.95516.com = server:127.0.0.1
 ads.adfunlink.com = server:127.0.0.1
 ads.auctions.yahoo.com = server:127.0.0.1
-ads.cup.com.cn = server:127.0.0.1
 ads.finance.yahoo.com = server:127.0.0.1
 ads.google.cn = server:127.0.0.1
 ads.huan.tv = server:127.0.0.1
@@ -116,18 +100,8 @@ ads.pinterest.com = server:127.0.0.1
 ads.pubmatic.com = server:127.0.0.1
 ads.raidrive.com = server:127.0.0.1
 ads.servebom.com = server:127.0.0.1
-ads.service.kugou.com = server:127.0.0.1
-ads.v3mh.com = server:127.0.0.1
 ads.youtube.com = server:127.0.0.1
 ads.zhinengxiyifang.cn = server:127.0.0.1
-ads3-normal-hl.zijieapi.com = server:127.0.0.1
-ads3-normal-lf.zijieapi.com = server:127.0.0.1
-ads3-normal-lq.zijieapi.com = server:127.0.0.1
-ads3-normal.zijieapi.com = server:127.0.0.1
-ads5-normal-hl.zijieapi.com = server:127.0.0.1
-ads5-normal-lf.zijieapi.com = server:127.0.0.1
-ads5-normal-lq.zijieapi.com = server:127.0.0.1
-ads5-normal.zijieapi.com = server:127.0.0.1
 adscdn.baidu.com = server:127.0.0.1
 adsdk.vivo.com.cn = server:127.0.0.1
 adse.test.ximalaya.com = server:127.0.0.1
@@ -136,44 +110,30 @@ adse.ximalaya.com = server:127.0.0.1
 adsebs.ximalaya.com = server:127.0.0.1
 adsense.google.cn = server:127.0.0.1
 adserver.unityads.unity3d.com = server:127.0.0.1
-adservice.google.com = server:127.0.0.1
 adservice.sigmob.cn = server:127.0.0.1
-adserviceretry.kugou.com = server:127.0.0.1
-adsfile.bssdlbig.kugou.com = server:127.0.0.1
-adsfile.qq.com = server:127.0.0.1
-adsfilebssdlbig.ali.kugou.com = server:127.0.0.1
-adsfileretry.service.kugou.com = server:127.0.0.1
 adsfs-sdkconfig.heytapimage.com = server:127.0.0.1
-adsfs.heytapimage.com = server:127.0.0.1
 adsfs.oppomobile.com = server:127.0.0.1
-adslvfile.qq.com = server:127.0.0.1
 adsmart.konka.com = server:127.0.0.1
 adsmartget.datads.cn = server:127.0.0.1
-adsmind.gdtimg.com = server:127.0.0.1
-adsmind.ugdtimg.com = server:127.0.0.1
-adsp.xunlei.com = server:127.0.0.1
+adsmoloco.com = server:127.0.0.1
 adstat.izuiyou.com = server:127.0.0.1
-adstats.tencentmusic.com = server:127.0.0.1
 adstextview.qq.com = server:127.0.0.1
 adstore-1252524079.file.myqcloud.com = server:127.0.0.1
 adstore-index-1252524079.file.myqcloud.com = server:127.0.0.1
-adstrategy.biz.weibo.com = server:127.0.0.1
-adstudio-assets.scdn.co = server:127.0.0.1
 adtago.s3.amazonaws.com = server:127.0.0.1
 adtrack.quark.cn = server:127.0.0.1
 adtracker.adfunlink.com = server:127.0.0.1
 adtracker.medproad.com = server:127.0.0.1
-adui.tg.meitu.com = server:127.0.0.1
 adv-api.shenshiads.com = server:127.0.0.1
 adv.sec.intl.miui.com = server:127.0.0.1
 adv.sec.miui.com = server:127.0.0.1
 advice-ads.s3.amazonaws.com = server:127.0.0.1
+adview.cn = server:127.0.0.1
 adx-ad.smart-tv.cn = server:127.0.0.1
 adx-api.jinmo.tech = server:127.0.0.1
 adx-bj-req.anythinktech.com = server:127.0.0.1
 adx-bj.anythinktech.com = server:127.0.0.1
 adx-cn.anythinktech.com = server:127.0.0.1
-adx-drcn.op.dbankcloud.cn = server:127.0.0.1
 adx-open-service.youku.com = server:127.0.0.1
 adx-os.anythinktech.com = server:127.0.0.1
 adx-os.bridgeoos.com = server:127.0.0.1
@@ -189,22 +149,14 @@ adx.tuia.cn = server:127.0.0.1
 adxlog-adnet.vivo.com.cn = server:127.0.0.1
 adxlog.vivo.com.cn = server:127.0.0.1
 adxserver.ad.cmvideo.cn = server:127.0.0.1
-adxstatic.vivo.com.cn = server:127.0.0.1
 aegis.qq.com = server:127.0.0.1
 aem.dentsuchina.cn = server:127.0.0.1
 aeventlog.beacon.qq.com = server:127.0.0.1 # # 腾讯埋点
 afs.googlesyndication.com = server:127.0.0.1
-agn.aty.sohu.com = server:127.0.0.1
 aiseet.aa.atianqi.com = server:127.0.0.1
-ali-ad.a.yximgs.com = server:127.0.0.1
-ali-p2p-v2.pull.yximgs.com = server:127.0.0.1
 alicoccdncnc-xn.inter.71edge.com = server:127.0.0.1
 alicoccdnct-xn.inter.71edge.com = server:127.0.0.1
-alltbcsp2p.baidu.com = server:127.0.0.1
-alog.umeng.com = server:127.0.0.1
-alogsus.umeng.com = server:127.0.0.1
 alogus.umeng.com = server:127.0.0.1
-als.baidu.com = server:127.0.0.1
 amdcopen.m.taobao.com = server:127.0.0.1
 an.facebook.com = server:127.0.0.1
 analysis.chatglm.cn = server:127.0.0.1
@@ -212,7 +164,6 @@ analysis.yozocloud.cn = server:127.0.0.1
 analytics-api.samsunghealthcn.com = server:127.0.0.1
 analytics.adjust.cn = server:127.0.0.1
 analytics.oceanengine.com = server:127.0.0.1
-analytics.pinterest.com = server:127.0.0.1
 analytics.pointdrive.linkedin.com = server:127.0.0.1
 analytics.query.yahoo.com = server:127.0.0.1
 analytics.rayjump.com = server:127.0.0.1
@@ -221,10 +172,8 @@ analytics.tiktok.com = server:127.0.0.1
 analytics.woozooo.com = server:127.0.0.1
 analyticsengine.s3.amazonaws.com = server:127.0.0.1
 analyze.lemurbrowser.com = server:127.0.0.1
-android.bugly.qq.com = server:127.0.0.1
 andrqd.play.aiseet.atianqi.com = server:127.0.0.1
 ap.dongdianqiu.com = server:127.0.0.1
-ap.dongqiudi.com = server:127.0.0.1
 apd-pcdnwxlogin.teg.tencent-cloud.net = server:127.0.0.1
 apd-pcdnwxnat.teg.tencent-cloud.net = server:127.0.0.1
 apd-pcdnwxstat.teg.tencent-cloud.net = server:127.0.0.1
@@ -241,35 +190,26 @@ api-ad.kajicam.com = server:127.0.0.1
 api-gd.hiaiabc.com = server:127.0.0.1
 api-htp.beizi.biz = server:127.0.0.1
 api.ad.xiaomi.com = server:127.0.0.1
-api.anythinktech.com = server:127.0.0.1
 api.aqyad.com = server:127.0.0.1
-api.e.kuaishou.com = server:127.0.0.1
-api.fu.xcultur.com = server:127.0.0.1
 api.htp.hubcloud.com.cn = server:127.0.0.1
 api.hzsanjiaomao.com = server:127.0.0.1
 api.iegadp.qq.com = server:127.0.0.1
 api.installer.xiaomi.com = server:127.0.0.1
-api.jietuhb.com = server:127.0.0.1
-api.kingdata.ksyun.com = server:127.0.0.1
 api.shanghailingye.cn = server:127.0.0.1
 api.ssp.xcultur.com = server:127.0.0.1
 api.statsig.com = server:127.0.0.1
 api.touch-moblie.com = server:127.0.0.1
 api.yfanads.com = server:127.0.0.1
 apiyd.my91app.com = server:127.0.0.1
-apm-native.xiaohongshu.com = server:127.0.0.1
 apmplus.volces.com = server:127.0.0.1
-appcfg.v.qq.com = server:127.0.0.1
+app-measurement.com = server:127.0.0.1
 applog-perf.uc.cn = server:127.0.0.1
 applog.lc.quark.cn = server:127.0.0.1
 applog.uc.cn = server:127.0.0.1
-applog.zijieapi.com = server:127.0.0.1
-aspect-upush.umeng.com = server:127.0.0.1
+applovin.com = server:127.0.0.1
+aqyad.com = server:127.0.0.1
 auction.unityads.unity3d.com = server:127.0.0.1
-audid-api.taobao.com = server:127.0.0.1
-audid.umeng.com = server:127.0.0.1
 b1-data.ads.heytapmobi.com = server:127.0.0.1
-badjs.weixinbridge.com = server:127.0.0.1
 baichuan-sdk.alicdn.com = server:127.0.0.1
 baichuan-sdk.taobao.com = server:127.0.0.1
 bdad.123pan.cn = server:127.0.0.1
@@ -277,19 +217,15 @@ bdapi-ads.realmemobile.com = server:127.0.0.1
 bdapi-in-ads.realmemobile.com = server:127.0.0.1
 bdapi.ads.oppomobile.com = server:127.0.0.1
 bdcdncnc.inter.71edge.com = server:127.0.0.1
-beacon-api.aliyuncs.com = server:127.0.0.1
 beacon.qq.com = server:127.0.0.1
-beaconcdn.qq.com = server:127.0.0.1
 beacons.gvt2.com = server:127.0.0.1
-bes-mtj.baidu.com = server:127.0.0.1
+beizi.biz = server:127.0.0.1
 bgg.baidu.com = server:127.0.0.1
 bid.shanghailingye.cn = server:127.0.0.1
 biz.weibo.com = server:127.0.0.1
 bj-td-menta-01-callback.advlion.com = server:127.0.0.1
 bj.ad.track.66mobi.com = server:127.0.0.1
 boost-cmp.hismarttv.com = server:127.0.0.1
-bootpreload.uve.weibo.com = server:127.0.0.1
-brandadsstatic.vivo.com.cn = server:127.0.0.1
 browser.events.data.msn.cn = server:127.0.0.1
 browser.events.data.msn.com = server:127.0.0.1
 browsercfg-drcn.cloud.dbankcloud.cn = server:127.0.0.1
@@ -301,39 +237,29 @@ c.evidon.com = server:127.0.0.1
 c.gj.qq.com = server:127.0.0.1
 c.kuaiduizuoye.com = server:127.0.0.1
 c.sayhi.360.cn = server:127.0.0.1
-c2.gdt.qq.com = server:127.0.0.1
-canvas-cdn.gdt.qq.com = server:127.0.0.1
 catalog.fjwhcbsh.com = server:127.0.0.1
-cbjs.baidu.com = server:127.0.0.1
 ccc-x.jd.com = server:127.0.0.1
-ccs.umeng.com = server:127.0.0.1
-cdn-ad.wtzw.com = server:127.0.0.1
 cdn-ads.oss-cn-shanghai.aliyuncs.com = server:127.0.0.1
 cdn-f.adsmoloco.com = server:127.0.0.1
 cdn-plugin-sync-upgrade-juui.hismarttv.com = server:127.0.0.1
-cdn.aiclk.com = server:127.0.0.1
 cdn.chinaliftoff-creatives.io = server:127.0.0.1
 cdn.hpplay.com.cn = server:127.0.0.1
 cdn.iads.unitychina.cn = server:127.0.0.1
 cdn.liftoff-creatives.io = server:127.0.0.1
-cdn.ynuf.aliapp.org = server:127.0.0.1
-cfg.imtt.qq.com = server:127.0.0.1
-chat1.jd.com = server:127.0.0.1
+chiq-cloud.com = server:127.0.0.1
 ck.ads.oppomobile.com = server:127.0.0.1
-click.chinaliftoff.io = server:127.0.0.1
 click.googleanalytics.com = server:127.0.0.1
-click.liftoff.io = server:127.0.0.1
 click.oneplus.cn = server:127.0.0.1
 click4.chinaliftoff.io = server:127.0.0.1
 client-upload.cn-shanghai.log.aliyuncs.com = server:127.0.0.1
-clog.miguvideo.com = server:127.0.0.1
+cloooud.com = server:127.0.0.1
 cn-api-sec.anythinktech.com = server:127.0.0.1
 cn-api.anythinktech.com = server:127.0.0.1
 cn-da.anythinktech.com = server:127.0.0.1
 cn-tk.anythinktech.com = server:127.0.0.1
-cnlogs.umeng.com = server:127.0.0.1
-cnlogs.umengcloud.com = server:127.0.0.1
+cnzz.com = server:127.0.0.1
 collect.kugou.com = server:127.0.0.1
+comfylink.com = server:127.0.0.1 # # 广告 SDK 集群：sdktt.data / seeds-open / ipip-gl1 / cf-gl
 commdata.v.qq.com = server:127.0.0.1
 commercial.shouji.360.cn = server:127.0.0.1
 conf.hpplay.cn = server:127.0.0.1
@@ -341,30 +267,24 @@ config.chsmarttv.com = server:127.0.0.1
 config.inmobi.com = server:127.0.0.1
 config.unityads.unity3d.com = server:127.0.0.1
 cpc-service-square.aiclk.com = server:127.0.0.1
-cpro.baidustatic.com = server:127.0.0.1
-crash2.zhihu.com = server:127.0.0.1
 crashlyticsreports-pa.googleapis.com = server:127.0.0.1
-d.applovin.com = server:127.0.0.1
 d.applvn.com = server:127.0.0.1
-da.anythinktech.com = server:127.0.0.1
 da.statisticslinks.com = server:127.0.0.1
-data-sdk-uuid-log.d.meituan.net = server:127.0.0.1
 data.ads.oppomobile.com = server:127.0.0.1
 data.chsmarttv.com = server:127.0.0.1
 data.hicloud.com = server:127.0.0.1
 data.mistat.india.xiaomi.com = server:127.0.0.1
 data.mistat.rus.xiaomi.com = server:127.0.0.1
 data.mistat.xiaomi.com = server:127.0.0.1
-datacollection.uve.weibo.com = server:127.0.0.1
 dc.sigmob.cn = server:127.0.0.1
 de.ad.gameley.com = server:127.0.0.1
 de.tynt.com = server:127.0.0.1
 diagnosis.ad.xiaomi.com = server:127.0.0.1
 dig.bdurl.net = server:127.0.0.1
 dlogs.bwton.com = server:127.0.0.1
-dm.toutiao.com = server:127.0.0.1
-dns.alidns.com = server:127.0.0.1
+doh.pub = server:127.0.0.1
 domain.aishengji.com = server:127.0.0.1
+doubleclick-cn.net = server:127.0.0.1
 download.changhong.upgrade2.huan.tv = server:127.0.0.1
 downloadxml.changhong.upgrade2.huan.tv = server:127.0.0.1
 dsp-x.jd.com = server:127.0.0.1
@@ -372,80 +292,59 @@ dsp.fcbox.com = server:127.0.0.1
 dsplog-adnet.vivo.com.cn = server:127.0.0.1
 du-app.cn-hangzhou.log.aliyuncs.com = server:127.0.0.1
 dualstack-logs.amap.com = server:127.0.0.1
-dxp.baidu.com = server:127.0.0.1
-dyp2p-ali.douyucdn.cn = server:127.0.0.1
 dyp2p-hw.douyucdn.cn = server:127.0.0.1
 e.ad.xiaomi.com = server:127.0.0.1
-eclick.baidu.com = server:127.0.0.1
 edge.ads.twitch.tv = server:127.0.0.1
-ef-dongfeng.tanx.com = server:127.0.0.1
 engine.dcad01.com = server:127.0.0.1
-entry.baidu.com = server:127.0.0.1
-errlog.umeng.com = server:127.0.0.1
 errlogos.umeng.com = server:127.0.0.1
-errnewlog.umeng.com = server:127.0.0.1
 errnewlogos.umeng.com = server:127.0.0.1
 et-eus.w.inmobi.com = server:127.0.0.1
 event.tradplusad.com = server:127.0.0.1
-events-drcn.op.dbankcloud.cn = server:127.0.0.1
 events.reddit.com = server:127.0.0.1
 events.redditmedia.com = server:127.0.0.1
 eventv1.leidong.rayenergytech.com = server:127.0.0.1
-fclog.baidu.com = server:127.0.0.1
-feed-image.baidu.com = server:127.0.0.1
-file.daihuo.qq.com = server:127.0.0.1
-firebaselogging-pa.googleapis.com = server:127.0.0.1
+fancyapi.com = server:127.0.0.1
+flurry.com = server:127.0.0.1
 fp-it.fengkongcloud.com = server:127.0.0.1
 frontend-perf-service.e.kuaishou.com = server:127.0.0.1
-fxgate.baidu.com = server:127.0.0.1
 g-adnet.hiaiabc.com = server:127.0.0.1
 g-staic.ganjingworld.com = server:127.0.0.1
-g.cn.miaozhen.com = server:127.0.0.1
-g.dtv.cn.miaozhen.com = server:127.0.0.1
 g.fancyapi.com = server:127.0.0.1
-g2.ganjing.world = server:127.0.0.1
 game.loveota.com = server:127.0.0.1
-gdfp.gifshow.com = server:127.0.0.1
 gemini.yahoo.com = server:127.0.0.1
 geo.yahoo.com = server:127.0.0.1
+getui.cn = server:127.0.0.1
 ggx.cmvideo.cn = server:127.0.0.1
 ggx01.miguvideo.com = server:127.0.0.1
 ggx03.miguvideo.com = server:127.0.0.1
 globalapi.ad.xiaomi.com = server:127.0.0.1
-googleads.g.doubleclick-cn.net = server:127.0.0.1
+google-analytics.com = server:127.0.0.1
 googleads.g.doubleclick.net = server:127.0.0.1
+googleadservices-cn.com = server:127.0.0.1
+googleadservices.com = server:127.0.0.1
+googletagservices-cn.com = server:127.0.0.1
 gorgon.youdao.com = server:127.0.0.1
 gromore.pangolin-sdk-toutiao.com = server:127.0.0.1
-grs.dbankcloud.com = server:127.0.0.1
-grs.hicloud.com = server:127.0.0.1
 gslb.hpplay.cn = server:127.0.0.1
 gvideo.qpic.cn = server:127.0.0.1
-gw5.push.mcp.weibo.cn = server:127.0.0.1
 gw6.push.mcp.weibo.cn = server:127.0.0.1
-h-adashx.ut.taobao.com = server:127.0.0.1
-h.trace.qq.com = server:127.0.0.1
 h5.analytics.126.net = server:127.0.0.1
 h5.hpplay.com.cn = server:127.0.0.1
-hc-ssp.sm.cn = server:127.0.0.1
+hanlanad.com = server:127.0.0.1
 heads-ak.spotify.com.edgesuite.net = server:127.0.0.1
 heads-fa.spotify.com = server:127.0.0.1
+hexagon-analytics.com = server:127.0.0.1
 hlog.bigda.com = server:127.0.0.1
-hm.baidu.com = server:127.0.0.1
-hmma.baidu.com = server:127.0.0.1
 hotupgrade.hpplay.cn = server:127.0.0.1
 houyi.kkmh.com = server:127.0.0.1
 hpplay.cdn.cibn.cc = server:127.0.0.1
 httpdns.bcelive.com = server:127.0.0.1
 httpdns.ocloud.oppomobile.com = server:127.0.0.1
 hugelog.fcbox.com = server:127.0.0.1
-huichuan-mc.sm.cn = server:127.0.0.1
-huichuan.sm.cn = server:127.0.0.1
 huodong.ios.shouji.360.cn = server:127.0.0.1
 huodong.weibo.cn = server:127.0.0.1
 hw-ot-ad.a.yximgs.com = server:127.0.0.1
 hw-p2p-pull.video-voip.com = server:127.0.0.1
-hw-p2p.pull.yximgs.com = server:127.0.0.1
-hwpub-s01-drcn.cloud.dbankcloud.cn = server:127.0.0.1
 hybrid.miniapp.taobao.com = server:127.0.0.1
 hye.comp.360os.com = server:127.0.0.1
 hyt.comp.360os.com = server:127.0.0.1
@@ -453,21 +352,12 @@ i.l-new.inmobicdn.net = server:127.0.0.1
 i.l.inmobicdn.net = server:127.0.0.1
 iad.g.163.com = server:127.0.0.1
 iadctest.qwapi.com = server:127.0.0.1
-iadmusicmat.music.126.net = server:127.0.0.1
-ifacelog.iqiyi.com = server:127.0.0.1
-ifs.tanx.com = server:127.0.0.1
-ii.gdt.qq.com = server:127.0.0.1
-image-ad.sm.cn = server:127.0.0.1
 image.hpplay.cn = server:127.0.0.1
 images.outbrainimg.com = server:127.0.0.1
 imdns.hpplay.cn = server:127.0.0.1
-img-c.heytapimage.com = server:127.0.0.1
-img-x.jd.com = server:127.0.0.1
 img.adnyg.com.w.kunlungr.com = server:127.0.0.1
-img2.360buyimg.com = server:127.0.0.1
 imp-cmp.hismarttv.com = server:127.0.0.1
 impression-asia.chinaliftoff.io = server:127.0.0.1
-impression-asia.liftoff.io = server:127.0.0.1
 impression.appsflyer.com = server:127.0.0.1
 in.treasuredata.com = server:127.0.0.1
 init.supersonicads.com = server:127.0.0.1
@@ -477,270 +367,174 @@ iot-eu-logser.realme.com = server:127.0.0.1
 iot-logser.realme.com = server:127.0.0.1
 ipv4.kkmh.com = server:127.0.0.1
 irc.qubiankeji.com = server:127.0.0.1
-ixav-cse.avlyun.com = server:127.0.0.1
+iyfbodn.com = server:127.0.0.1
 janapi.jd.com = server:127.0.0.1
+jiguang.cn = server:127.0.0.1
+jomoxc.com = server:127.0.0.1 # # 随机子域广告域，整后缀拦截（低优先 / 可回滚）
 jp.ad.gameley.com = server:127.0.0.1
+jpush.cn = server:127.0.0.1
 jpush.html5.qq.com = server:127.0.0.1
+jpush.io = server:127.0.0.1
 jswebcollects.kugou.com = server:127.0.0.1
-kde.qq.com = server:127.0.0.1
 kepler.jd.com = server:127.0.0.1
 kl.67it.com = server:127.0.0.1
 klink.volceapplog.com = server:127.0.0.1
 knicks.jd.com = server:127.0.0.1
 ks-p2p-v2.pull.yximgs.com = server:127.0.0.1
-ks-p2p.pull.yximgs.com = server:127.0.0.1
 ks.ferlytc.com = server:127.0.0.1
-ks.pull.yximgs.com = server:127.0.0.1
-kwpush.kuwo.cn = server:127.0.0.1
-l2-toutiao-quic-ipv6-ml.gslb.ksyuncdn.com = server:127.0.0.1
-l6.fancyapi.com = server:127.0.0.1
 launcher.smart-tv.cn = server:127.0.0.1
 launcherimg.smart-tv.cn = server:127.0.0.1
-lf-event-manager.oceanengine.com = server:127.0.0.1
-lf3-ad-union-sdk.pglstatp-toutiao.com = server:127.0.0.1
-lf6-ad-union-sdk.pglstatp-toutiao.com = server:127.0.0.1
 lftxali.fancyapi.com = server:127.0.0.1
 lh3.googleadsserving.cn = server:127.0.0.1
+litchiads.com = server:127.0.0.1
 live-api.hktvmall.com = server:127.0.0.1
 liveats-vod.video.ptqy.gitv.tv = server:127.0.0.1
 livemonitor.huan.tv = server:127.0.0.1
 livep.l.aiseet.atianqi.com = server:127.0.0.1
-lives.l.aiseet.atianqi.com = server:127.0.0.1
 lives.l.ott.video.qq.com = server:127.0.0.1
-livewebbs2pcdn.msstatic.com = server:127.0.0.1
 lm10111.jtrincc.cn = server:127.0.0.1
-lng.xiaohongshu.com = server:127.0.0.1
 loading-cmp.hismarttv.com = server:127.0.0.1
 log-api-mn.huxiu.com = server:127.0.0.1
 log-api.huxiu.com = server:127.0.0.1
-log-api.pangolin-sdk-toutiao-b.com = server:127.0.0.1
 log-api.pangolin-sdk-toutiao.com = server:127.0.0.1
 log-auth.zztfly.com = server:127.0.0.1
 log-sdk.gifshow.com = server:127.0.0.1
 log-sdk.ksapisrv.com = server:127.0.0.1
-log-upload-os.hoyoverse.com = server:127.0.0.1
 log-upload.mihoyo.com = server:127.0.0.1
 log-verify.dutils.com = server:127.0.0.1
 log-verify.hiaiabc.com = server:127.0.0.1
 log.ad.xiaomi.com = server:127.0.0.1
 log.aispeech.com = server:127.0.0.1
 log.appstore3.huan.tv = server:127.0.0.1
-log.avlyun.com = server:127.0.0.1
 log.byteoversea.com = server:127.0.0.1
-log.fc.yahoo.com = server:127.0.0.1
 log.iflytek.com = server:127.0.0.1
-log.ireader.com = server:127.0.0.1
-log.kuwo.cn = server:127.0.0.1
-log.pinterest.com = server:127.0.0.1
 log.popin.cc = server:127.0.0.1
-log.stat.kugou.com = server:127.0.0.1
 log.tagtic.cn = server:127.0.0.1
-log.tbs.qq.com = server:127.0.0.1
 log.vcgame.cn = server:127.0.0.1
-log.web.kugou.com = server:127.0.0.1
-log.zijieapi.com = server:127.0.0.1
-log1.cmpassport.com = server:127.0.0.1
-log3-applog-lf.fqnovel.com = server:127.0.0.1 # # 番茄埋点 实测 27 次
-log5-applog-hl.fqnovel.com = server:127.0.0.1
-log5-applog-lf.fqnovel.com = server:127.0.0.1 # # 番茄埋点 实测 136 次，最活跃
-logbak.hicloud.com = server:127.0.0.1
-logrcv.aiclk.com = server:127.0.0.1
 logrcv.yunxish.com = server:127.0.0.1
 logs-bigdata.yeehaw.com.cn = server:127.0.0.1
 logs.amap.com = server:127.0.0.1
 logservice.hicloud.com = server:127.0.0.1
 logservice1.hicloud.com = server:127.0.0.1
-logtj.kugou.com = server:127.0.0.1
-logupdate.avlyun.sec.miui.com = server:127.0.0.1
-logv2.ireader.com = server:127.0.0.1
-logwebs.kugou.com = server:127.0.0.1
 lookup.api.bsb.baidu.com = server:127.0.0.1
-luimg.baidu.com = server:127.0.0.1
 m-adnet.hiaiabc.com = server:127.0.0.1
 m.ad.zhangyue.com = server:127.0.0.1
-m.atm.youku.com = server:127.0.0.1
 m.shenshiads.com = server:127.0.0.1
-m1.ad.10010.com = server:127.0.0.1
-mapi.m.jd.com = server:127.0.0.1
-masdkv6.3g.qq.com = server:127.0.0.1
-mazu.m.qq.com = server:127.0.0.1
 mbdlog.iqiyi.com = server:127.0.0.1
+medproad.com = server:127.0.0.1
 metrics.data.hicloud.com = server:127.0.0.1
 metrics.mzstatic.com = server:127.0.0.1
 metrics2.data.hicloud.com = server:127.0.0.1
 metrika.yandex.ru = server:127.0.0.1
-mi.gdt.qq.com = server:127.0.0.1
-miav-cse.avlyun.com = server:127.0.0.1
-mini-prog-drm.vodplayvideo.net = server:127.0.0.1
-minigame3-normal-hl.zijieapi.com = server:127.0.0.1
-minigame3-normal-lf.zijieapi.com = server:127.0.0.1
-minigame3-normal-lq.zijieapi.com = server:127.0.0.1
-minigame5-normal-hl.zijieapi.com = server:127.0.0.1
-minigame5-normal-lf.zijieapi.com = server:127.0.0.1
-minigame5-normal-lq.zijieapi.com = server:127.0.0.1
+micro-xdb.com = server:127.0.0.1
 mission-pub.smart-tv.cn = server:127.0.0.1
 miui-fxcse.avlyun.com = server:127.0.0.1
-mlog.bigda.com = server:127.0.0.1
 mnqlog.ldmnq.com = server:127.0.0.1
+moatads.com = server:127.0.0.1
 mobads-logs.baidu.com = server:127.0.0.1
-mobads-pre-config.cdn.bcebos.com = server:127.0.0.1
-mobads.baidu.com = server:127.0.0.1
 mobaliyun.res.mgtv.com = server:127.0.0.1
 mobile.da.mgtv.com = server:127.0.0.1
 mobile.events.data.microsoft.com = server:127.0.0.1
-mobilead.kuwo.cn = server:127.0.0.1
-mobilelog.kugou.com = server:127.0.0.1
 mobilelog.upqzfile.com = server:127.0.0.1
-mon11-misc-hl.fqnovel.com = server:127.0.0.1
-mon11-misc-lf.fqnovel.com = server:127.0.0.1 # # 番茄杂项上报 实测 26 次
-mon3-misc-lf.fqnovel.com = server:127.0.0.1 # # 番茄杂项上报 实测 2 次
 monitor-ads-test.huan.tv = server:127.0.0.1
 monitor-uu.play.aiseet.atianqi.com = server:127.0.0.1
 monitor.adxsenmeng.com = server:127.0.0.1
-monitor.music.qq.com = server:127.0.0.1
 monitor.uu.qq.com = server:127.0.0.1
-monsetting.toutiao.com = server:127.0.0.1
 mores.toponad.com = server:127.0.0.1
-mpcfg.fancydsp.com = server:127.0.0.1
-ms.applovin.com = server:127.0.0.1
 ms.applvn.com = server:127.0.0.1
 ms4.applovin.com = server:127.0.0.1
 ms4.applvn.com = server:127.0.0.1
 msdk.voiceads.cn = server:127.0.0.1
 msg-cmp.hismarttv.com = server:127.0.0.1
-mssdk.volces.com = server:127.0.0.1
 mssdk.zijieapi.com = server:127.0.0.1
 msync-im1-vip6-std.easemob.com = server:127.0.0.1
 mtj.baidu.com = server:127.0.0.1
-nadvideo2.baidu.com = server:127.0.0.1
+ndcpp.com = server:127.0.0.1 # # 广告 SDK：vc-mirror / vc-brain
 newvoice.chiq5.smart-tv.cn = server:127.0.0.1
 nex.163.com = server:127.0.0.1
 nmetrics.samsung.com = server:127.0.0.1
 notify.sec.miui.com = server:127.0.0.1
-nsclick.baidu.com = server:127.0.0.1
 o-sdk.mediation.unity3d.com = server:127.0.0.1
 o2o.api.xiaomi.com = server:127.0.0.1
 offerwall.yandex.net = server:127.0.0.1
-ogads-pa.clients6.google.com = server:127.0.0.1
 omgmta.play.aiseet.atianqi.com = server:127.0.0.1
 open-set-api.shenshiads.com = server:127.0.0.1
-open.e.kuaishou.cn = server:127.0.0.1
-open.e.kuaishou.com = server:127.0.0.1
 open.kuaishouzt.com = server:127.0.0.1
 open.kwaizt.com = server:127.0.0.1
 open.snssdk.com = server:127.0.0.1
-openadapi.fancydsp.com = server:127.0.0.1
-optimus-ads.amap.com = server:127.0.0.1
 orbit.jd.com = server:127.0.0.1
-oss.cdn.aiclk.com = server:127.0.0.1
-ossnt-errlog.umeng.com = server:127.0.0.1
 oth.eve.mdt.qq.com = server:127.0.0.1
 oth.str.mdt.qq.com = server:127.0.0.1
 otheve.play.aiseet.atianqi.com = server:127.0.0.1
-outlookads.live.com = server:127.0.0.1
-p.l.qq.com = server:127.0.0.1
-p.s.360.cn = server:127.0.0.1
 p1-be-pack-sign.pglstatp-toutiao.com = server:127.0.0.1
-p1-lm.adkwai.com = server:127.0.0.1
 p2-be-pack-sign.pglstatp-toutiao.com = server:127.0.0.1
-p2-lm.adkwai.com = server:127.0.0.1
 p2pchunk-table.douyucdn.cn = server:127.0.0.1
 p2plive-ali.douyucdn.cn = server:127.0.0.1
 p2pupdate.gamedl.qq.com = server:127.0.0.1
 p2pupgrade.gamedl.qq.com = server:127.0.0.1
-p3-ad-sign.byteimg.com = server:127.0.0.1
-p3-be-pack-sign.pglstatp-toutiao.com = server:127.0.0.1
-p3-lm.adkwai.com = server:127.0.0.1
-p3-tt.byteimg.com = server:127.0.0.1
 p4-be-pack-sign.pglstatp-toutiao.com = server:127.0.0.1
-p5-be-pack-sign.pglstatp-toutiao.com = server:127.0.0.1
-p6-ad-sign.byteimg.com = server:127.0.0.1
-p6-be-pack-sign.pglstatp-toutiao.com = server:127.0.0.1
-p66-ad.adkwai.com = server:127.0.0.1
-p9-ad-sign.byteimg.com = server:127.0.0.1
 pagead2.googleadservices.com = server:127.0.0.1
 pagead2.googlesyndication.com = server:127.0.0.1
+pangle.io = server:127.0.0.1
+pangolin-sdk-toutiao-b.com = server:127.0.0.1
+pangolin-sdk-toutiao.com = server:127.0.0.1
 paster-cmp.hismarttv.com = server:127.0.0.1
 pay.sboot.cn = server:127.0.0.1
 pcdn.xmcdn.com = server:127.0.0.1
 pcdn.yximgs.com = server:127.0.0.1
 pcm-img.zhls.qq.com = server:127.0.0.1
-pgdt.gtimg.cn = server:127.0.0.1
-pgdt.ugdtimg.com = server:127.0.0.1
-pica-a-display.diwodiwo.xyz = server:127.0.0.1
-pica-ad-api.diwodiwo.xyz = server:127.0.0.1
+pglstatp-toutiao.com = server:127.0.0.1
 pig.pupuapi.com = server:127.0.0.1
 pin.hpplay.cn = server:127.0.0.1
 pixon.ads-pixiv.net = server:127.0.0.1
+pkoplink.com = server:127.0.0.1
 pl.cp31.ott.cibntv.net = server:127.0.0.1
-plbslog.umeng.com = server:127.0.0.1
 pms.mb.qq.com = server:127.0.0.1
 policy.video.ptqy.gitv.tv = server:127.0.0.1
-pos.baidu.com = server:127.0.0.1
 praisewindow.ugsdk.cn = server:127.0.0.1
 prod-mediate-events.applovin.com = server:127.0.0.1
 prom-sdkv2.jysper.net = server:127.0.0.1
 promotion-partner.kuaishou.com = server:127.0.0.1
-public.gdtimg.com = server:127.0.0.1
-q.i.gdt.qq.com = server:127.0.0.1
 qcwx.medproad.com = server:127.0.0.1
 qmlog.baertt.com = server:127.0.0.1
-qn-cdnfile1pcdn.msstatic.com = server:127.0.0.1
-qqdata.ab.qq.com = server:127.0.0.1
-qzs.gdtimg.com = server:127.0.0.1
+qrstuvwxyzab.com = server:127.0.0.1 # # 随机子域广告 CDN（域名本身就是键盘序，明显是广告平台）
 recmd-cmp.hismarttv.com = server:127.0.0.1
-recommend-drcn.hms.dbankcloud.cn = server:127.0.0.1
 report.dxunion.cn = server:127.0.0.1
-report.tencentmusic.com = server:127.0.0.1
 report.tv.kohesport.qq.com = server:127.0.0.1
 res.hubcloud.com.cn = server:127.0.0.1
 res1.applovin.com = server:127.0.0.1
 res1.hubcloud.com.cn = server:127.0.0.1
 res2.hubcloud.com.cn = server:127.0.0.1
 res3.hubcloud.com.cn = server:127.0.0.1
-resolve.umeng.com = server:127.0.0.1
 resource-cmp.hismarttv.com = server:127.0.0.1
 review.gdtimg.com = server:127.0.0.1
 rlog.popin.cc = server:127.0.0.1
-rms-drcn.platform.dbankcloud.cn = server:127.0.0.1
-roi.soulapp.cn = server:127.0.0.1
 rp.hpplay.cn = server:127.0.0.1
 rps.hpplay.cn = server:127.0.0.1
-rpt.gdt.qq.com = server:127.0.0.1
-rt.applovin.com = server:127.0.0.1
-rt.applvn.com = server:127.0.0.1
 rtb.adxsenmeng.com = server:127.0.0.1
 rtb.voiceads.cn = server:127.0.0.1
-rtlog3-applog-hl.fqnovel.com = server:127.0.0.1
-rtlog3-applog-lf.fqnovel.com = server:127.0.0.1 # # 番茄埋点 实测 4 次
-rtlog5-applog-hl.fqnovel.com = server:127.0.0.1
-rtlog5-applog-lf.fqnovel.com = server:127.0.0.1 # # 番茄埋点 实测 27 次
-s.amazon-adsystem.com = server:127.0.0.1
 s1.cdn-sg.advlion.com = server:127.0.0.1
 s8t.teads.tv = server:127.0.0.1
 saad.ms.zhangyue.net = server:127.0.0.1
 saas.hpplay.cn = server:127.0.0.1
 safebrowsing.urlsec.qq.com = server:127.0.0.1
 samsung-com.112.2o7.net = server:127.0.0.1
+samsungads.com = server:127.0.0.1
+saxysec.com = server:127.0.0.1
 scs.openspeech.cn = server:127.0.0.1
 sdk-ab-config.qquanquan.com = server:127.0.0.1
-sdk-cache.video.ptqy.gitv.tv = server:127.0.0.1
 sdk-track.66mobi.com = server:127.0.0.1
 sdk.1rtb.net = server:127.0.0.1
 sdk.ad.smaato.net = server:127.0.0.1
 sdk.adhuanxiao.com = server:127.0.0.1
-sdk.adx.adwangmai.com = server:127.0.0.1
 sdk.aqyad.com = server:127.0.0.1
 sdk.beizi.biz = server:127.0.0.1
 sdk.cferw.com = server:127.0.0.1
-sdk.e.qq.com = server:127.0.0.1
 sdk.hzsanjiaomao.com = server:127.0.0.1
 sdk.hzzfcm.com = server:127.0.0.1
 sdk.markmedia.com.cn = server:127.0.0.1
 sdk.mobads.adwangmai.com = server:127.0.0.1
 sdk.zhangyuyidong.cn = server:127.0.0.1
-sdkapi.cloooud.com = server:127.0.0.1
-sdkapp.uve.weibo.com = server:127.0.0.1
 sdkauth.hpplay.cn = server:127.0.0.1
 sdkconf.avlyun.com = server:127.0.0.1
 sdkconfig.ad.intl.xiaomi.com = server:127.0.0.1
@@ -749,7 +543,6 @@ sdkconfig.play.aiseet.atianqi.com = server:127.0.0.1
 sdkconfig.video.qq.com = server:127.0.0.1
 sdklog.zhangyuyidong.cn = server:127.0.0.1
 sdkoptedge.chinanetcenter.com = server:127.0.0.1
-sdkreport.e.qq.com = server:127.0.0.1
 sdktmp.hubcloud.com.cn = server:127.0.0.1
 sdownload.stargame.com = server:127.0.0.1
 securepubads.g.doubleclick.net = server:127.0.0.1
@@ -758,96 +551,64 @@ sentry.music.163.com = server:127.0.0.1
 service.changhong.upgrade2.huan.tv = server:127.0.0.1
 service.vmos.cn = server:127.0.0.1
 sf16-static.i18n-pglstatp.com = server:127.0.0.1
-sf3-fe-tos.pglstatp-toutiao.com = server:127.0.0.1
-sf3-ttcdn-tos.pstatp.com = server:127.0.0.1
-shihuo-new.log.shihuocdn.cn = server:127.0.0.1
-shihuo.log.shihuocdn.cn = server:127.0.0.1
 shouji.sogou.com = server:127.0.0.1
+sigmob.com = server:127.0.0.1
 skdisplay.jd.com = server:127.0.0.1
 sl.hpplay.cn = server:127.0.0.1
-slb-p2p.vcloud.ks-live.com = server:127.0.0.1
 smad.ms.zhangyue.net = server:127.0.0.1
-smartad.10010.com = server:127.0.0.1
 smetrics.samsung.com = server:127.0.0.1
 sms.ads.oppomobile.com = server:127.0.0.1
 sngmta.qq.com = server:127.0.0.1
-snowflake.qq.com = server:127.0.0.1
-spider-tracker.xiaohongshu.com = server:127.0.0.1
 ssapi.anythinktech.com = server:127.0.0.1
-ssp.cloooud.com = server:127.0.0.1
 staging-notify.sec.miui.com = server:127.0.0.1
 stat.dongqiudi.com = server:127.0.0.1
 stat.y.qq.com = server:127.0.0.1
-static-s.iqiyi.com = server:127.0.0.1
 static.ads-twitter.com = server:127.0.0.1
-statichf.shihuocdn.cn = server:127.0.0.1
 statics.woozooo.com = server:127.0.0.1
 stats.wp.com = server:127.0.0.1
+statsigapi.net = server:127.0.0.1
 stg-data.ads.heytapmobi.com = server:127.0.0.1
 stun.hitv.com = server:127.0.0.1
 success.ctobsnssdk.com = server:127.0.0.1
 supply.inmobicdn.net = server:127.0.0.1
 sv-video.play.aiseet.atianqi.com = server:127.0.0.1
-syh-imp.cdnjtzy.com = server:127.0.0.1
 syh.zybang.com = server:127.0.0.1
-t-adx.52qumao.com = server:127.0.0.1
-t-dsp.pinduoduo.com = server:127.0.0.1
+szbdyd.com = server:127.0.0.1
 t.applovin.com = server:127.0.0.1
 t.l.qq.com = server:127.0.0.1
 t.teads.tv = server:127.0.0.1
 t.track.ad.xiaomi.com = server:127.0.0.1
 t002.ottcn.com = server:127.0.0.1
-t1.a.market.xiaomi.com = server:127.0.0.1
 t1.teads.tv = server:127.0.0.1
-t2.a.market.xiaomi.com = server:127.0.0.1
 t2.fancyapi.com = server:127.0.0.1
-t3.a.market.xiaomi.com = server:127.0.0.1
-t7z.cupid.ptqy.gitv.tv = server:127.0.0.1
-tangram.e.qq.com = server:127.0.0.1
-target.ads.jihuoniao.com = server:127.0.0.1
+tagtic.cn = server:127.0.0.1
 tdc.qq.com = server:127.0.0.1
 tdsdk.cpatrk.net = server:127.0.0.1
 tdsdk.xdrig.com = server:127.0.0.1
+telecome.cn = server:127.0.0.1
 telemetry.sdk.inmobi.com = server:127.0.0.1
-tencent-dtv.m.cn.miaozhen.com = server:127.0.0.1
 test.ad.xiaomi.com = server:127.0.0.1
 test.e.ad.xiaomi.com = server:127.0.0.1
 tj.b.qq.com = server:127.0.0.1
 tj.video.qq.com = server:127.0.0.1
-tk.anythinktech.com = server:127.0.0.1
 tk.statisticslinks.com = server:127.0.0.1
-tmead.y.qq.com = server:127.0.0.1
-tmeadcomm.y.qq.com = server:127.0.0.1
 tmfmazu-wangka.m.qq.com = server:127.0.0.1
-tmfmazu.m.qq.com = server:127.0.0.1
-tmfsdk.m.qq.com = server:127.0.0.1
 tmfsdktcpv4.m.qq.com = server:127.0.0.1
 tnc0-aliec2.zijieapi.com = server:127.0.0.1
 tnc0-alisc1.zijieapi.com = server:127.0.0.1
 tnc0-bjlgy.zijieapi.com = server:127.0.0.1
 tnc3-aliec1.toutiaoapi.com = server:127.0.0.1
-tnc3-aliec2.bytedance.com = server:127.0.0.1
 tnc3-aliec2.snssdk.com = server:127.0.0.1
-tnc3-aliec2.toutiaoapi.com = server:127.0.0.1
-tnc3-aliec2.zijieapi.com = server:127.0.0.1
-tnc3-alisc1.bytedance.com = server:127.0.0.1
 tnc3-alisc1.snssdk.com = server:127.0.0.1
-tnc3-alisc1.toutiaoapi.com = server:127.0.0.1
-tnc3-alisc1.zijieapi.com = server:127.0.0.1
-tnc3-bjlgy.bytedance.com = server:127.0.0.1
 tnc3-bjlgy.snssdk.com = server:127.0.0.1
-tnc3-bjlgy.toutiaoapi.com = server:127.0.0.1
 tobapplog.ctobsnssdk.com = server:127.0.0.1
 toblog.ctobsnssdk.com = server:127.0.0.1
 tpa-hcdn.iqiyi.com = server:127.0.0.1
-tpc.googlesyndication-cn.com = server:127.0.0.1
 tpc.googlesyndication.com = server:127.0.0.1
 tr-asia.adsmoloco.com = server:127.0.0.1
 trace.aqyad.com = server:127.0.0.1
 trace.qq.com = server:127.0.0.1
-tracelog-debug.aiclk.com = server:127.0.0.1
 tracelog-debug.qquanquan.com = server:127.0.0.1
-tracelog-debug.yunxish.com = server:127.0.0.1
 track.lc.quark.cn = server:127.0.0.1
 track.uc.cn = server:127.0.0.1
 tracker-prd.aldi.com.cn = server:127.0.0.1
@@ -860,23 +621,17 @@ tracking.rus.miui.com = server:127.0.0.1
 tuiguang.meitu.com = server:127.0.0.1
 tvapp.hpplay.cn = server:127.0.0.1
 tvuser-ch.cedock.com = server:127.0.0.1
-tx-ad.a.yximgs.com = server:127.0.0.1
-tx-kmpaudio.pull.yximgs.com = server:127.0.0.1
 tx-p2p-pull.live-voip.com = server:127.0.0.1
-tx-p2p-v2.pull.yximgs.com = server:127.0.0.1
-tytx.m.cn.miaozhen.com = server:127.0.0.1
 uapi.ads.heytapmobi.com = server:127.0.0.1
+ubixioe.com = server:127.0.0.1
 udc.yahoo.com = server:127.0.0.1
 udcm.yahoo.com = server:127.0.0.1
 uedas.qidian.com = server:127.0.0.1
+uhabo.com = server:127.0.0.1
 ulog-sdk.gifshow.com = server:127.0.0.1
 ulogjs.gifshow.com = server:127.0.0.1
-ulogs.umeng.com = server:127.0.0.1
-ulogs.umengcloud.com = server:127.0.0.1
 umengacs.m.taobao.com = server:127.0.0.1
 umengjmacs.m.taobao.com = server:127.0.0.1
-umini.shujupie.com = server:127.0.0.1
-union-mlog.bigda.com = server:127.0.0.1
 union-record.oss-cn-zhangjiakou.aliyuncs.com = server:127.0.0.1
 unityads.unity3d.com = server:127.0.0.1
 upc.zztfly.com = server:127.0.0.1
@@ -884,152 +639,403 @@ update.avlyun.sec.miui.com = server:127.0.0.1
 update.lejiao.tv = server:127.0.0.1
 update0.aiclk.com = server:127.0.0.1
 upgrade-update.hismarttv.com = server:127.0.0.1
-uranus.jd.com = server:127.0.0.1
-us.l.qq.com = server:127.0.0.1
 usr-api.aiclk.com = server:127.0.0.1
-utoken.umeng.com = server:127.0.0.1
 v.110route.cn = server:127.0.0.1
 v.adintl.cn = server:127.0.0.1
 v.adx.hubcloud.com.cn = server:127.0.0.1
 v1-ad.video.yximgs.com = server:127.0.0.1
-v11-reading-ad.qznovelvod.com = server:127.0.0.1
-v13-reading-ad.qznovelvod.com = server:127.0.0.1
 v2-ad.video.yximgs.com = server:127.0.0.1
 v2-api-channel-launcher.hismarttv.com = server:127.0.0.1
-v2.gdt.qq.com = server:127.0.0.1
-v2.reachmax.cn = server:127.0.0.1
-v26-reading-ad.qznovelvod.com = server:127.0.0.1
-v2mi.gdt.qq.com = server:127.0.0.1
 v3-ad.video.yximgs.com = server:127.0.0.1
-v3.gdt.qq.com = server:127.0.0.1
-v5-bd-daily-reading-ad.qznovelvod.com = server:127.0.0.1
-v5-reading-ad.qznovelvod.com = server:127.0.0.1
-v5-se-sjy-daily-reading-ad.qznovelvod.com = server:127.0.0.1
-v6-reading-ad.qznovelvod.com = server:127.0.0.1
-v9-reading-ad.qznovelvod.com = server:127.0.0.1
-v96-reading-ad.qznovelvod.com = server:127.0.0.1
-vd6.l.qq.com = server:127.0.0.1
 vi.l.qq.com = server:127.0.0.1
 video-ad.sm.cn = server:127.0.0.1
-video-dsp.pddpic.com = server:127.0.0.1
 video.dispatch.tc.qq.com = server:127.0.0.1
-video.market.xiaomi.com = server:127.0.0.1
 vipauth.hpplay.cn = server:127.0.0.1
 vipgslb.hpplay.cn = server:127.0.0.1
 virusinfo-cloudscan-cn.heytapmobi.com = server:127.0.0.1
+vlion.cn = server:127.0.0.1
 vlive.qqvideo.tc.qq.com = server:127.0.0.1
 volc.bj.ad.track.66mobi.com = server:127.0.0.1
+vungle.com = server:127.0.0.1
 w.l.qq.com = server:127.0.0.1
 w1.askwai.com = server:127.0.0.1
-w1.gskwai.com = server:127.0.0.1
-w1.kskwai.com = server:127.0.0.1
 watson.microsoft.com = server:127.0.0.1
-watson.telemetry.microsoft.com = server:127.0.0.1
 wcp.taobao.com = server:127.0.0.1
-weather-community-drcn.weather.dbankcloud.cn = server:127.0.0.1
-webcast5-open-hl.douyin.com = server:127.0.0.1
-webcast5-open-hl.douyin.com.c.dsa.cdnbuild.net = server:127.0.0.1
 webstat.qiumibao.com = server:127.0.0.1
-webview.unityads.unity3d.com = server:127.0.0.1
 widgets.outbrain.com = server:127.0.0.1
 widgets.pinterest.com = server:127.0.0.1
 wildcard.moatads.com.edgekey.net = server:127.0.0.1
-win.gdt.qq.com = server:127.0.0.1
+wmzfylgdsz.com = server:127.0.0.1
 wn.x.jd.com = server:127.0.0.1
 ws-keyboard.shouji.sogou.com = server:127.0.0.1
 ws.sj.qq.com = server:127.0.0.1
 ws.tapjoyads.com = server:127.0.0.1
+wuchuyun.com = server:127.0.0.1 # # 随机子域广告 CDN
 wv.inner-active.mobi = server:127.0.0.1
-wxa.wxs.qq.com = server:127.0.0.1
-wxaintpcos.wxqcloud.qq.com.cn = server:127.0.0.1
-wximg.wxs.qq.com = server:127.0.0.1
-wxsmw.wxs.qq.com = server:127.0.0.1
+wwads.cn = server:127.0.0.1
 wxsnsad.tc.qq.com = server:127.0.0.1
-wxsnsdy.tc.qq.com = server:127.0.0.1
-wxsnsdy.wxs.qq.com = server:127.0.0.1
-wxsnsdythumb.wxs.qq.com = server:127.0.0.1
 xadsmartget.adgain.cn = server:127.0.0.1
-xc.gdt.qq.com = server:127.0.0.1
 xcx.dcad01.com = server:127.0.0.1
 xiaomi-dtv.m.cn.miaozhen.com = server:127.0.0.1
+xinqiucc.com = server:127.0.0.1 # # 随机子域广告 CDN：sd-gl
 xlog.jd.com = server:127.0.0.1
+xlviiirdr.com = server:127.0.0.1
+xlviirdr.com = server:127.0.0.1
+xycdn.com = server:127.0.0.1
+ydycdn.com = server:127.0.0.1 # # 随机子域广告 CDN（12 个随机子域）
+yfanads.com = server:127.0.0.1
 yk-ssp-ad.cp31.ott.cibntv.net = server:127.0.0.1
 yk-ssp.ad.youku.com = server:127.0.0.1
 ykad-data.cp31.ott.cibntv.net = server:127.0.0.1
 ykad-data.youku.com = server:127.0.0.1
 ykad-gateway.youku.com = server:127.0.0.1
 ytx-file.110route.cn = server:127.0.0.1
-yumao.puata.info = server:127.0.0.1
 zeus.ad.xiaomi.com = server:127.0.0.1
-zhihu-web-analytics.zhihu.com = server:127.0.0.1
-zjres-ad.kajicam.com = server:127.0.0.1
-zxid-m.mobileservice.cn = server:127.0.0.1
-1rtb.com = server:127.0.0.1
-8le8le.com = server:127.0.0.1
-ad-scope.com = server:127.0.0.1
-adcanvas.com = server:127.0.0.1
-adcolony.com = server:127.0.0.1
-adintl.cn = server:127.0.0.1
-adjust.cn = server:127.0.0.1
-adjust.com = server:127.0.0.1
-admobile.top = server:127.0.0.1
-adsmoloco.com = server:127.0.0.1
-adview.cn = server:127.0.0.1
-app-measurement.com = server:127.0.0.1
-applovin.com = server:127.0.0.1
-aqyad.com = server:127.0.0.1
-beizi.biz = server:127.0.0.1
-bianxian.com = server:127.0.0.1
-chiq-cloud.com = server:127.0.0.1
-cloooud.com = server:127.0.0.1
-cnzz.com = server:127.0.0.1
-comfylink.com = server:127.0.0.1 # # 广告 SDK 集群：sdktt.data / seeds-open / ipip-gl1 / cf-gl
-doh.pub = server:127.0.0.1
-doubleclick-cn.net = server:127.0.0.1
-fancyapi.com = server:127.0.0.1
-flurry.com = server:127.0.0.1
-getui.cn = server:127.0.0.1
-google-analytics.com = server:127.0.0.1
-googleadservices-cn.com = server:127.0.0.1
-googleadservices.com = server:127.0.0.1
-googletagservices-cn.com = server:127.0.0.1
-hanlanad.com = server:127.0.0.1
-hexagon-analytics.com = server:127.0.0.1
-iyfbodn.com = server:127.0.0.1
-jiguang.cn = server:127.0.0.1
-jomoxc.com = server:127.0.0.1 # # 随机子域广告域，整后缀拦截（低优先 / 可回滚）
-jpush.cn = server:127.0.0.1
-jpush.io = server:127.0.0.1
-litchiads.com = server:127.0.0.1
-log-report.com = server:127.0.0.1
-medproad.com = server:127.0.0.1
-micro-xdb.com = server:127.0.0.1
-moatads.com = server:127.0.0.1
-ndcpp.com = server:127.0.0.1 # # 广告 SDK：vc-mirror / vc-brain
-pangle.io = server:127.0.0.1
-pangolin-sdk-toutiao-b.com = server:127.0.0.1
-pangolin-sdk-toutiao.com = server:127.0.0.1
-pglstatp-toutiao.com = server:127.0.0.1
-pkoplink.com = server:127.0.0.1
-qrstuvwxyzab.com = server:127.0.0.1 # # 随机子域广告 CDN（域名本身就是键盘序，明显是广告平台）
-samsungads.com = server:127.0.0.1
-saxysec.com = server:127.0.0.1
-sigmob.com = server:127.0.0.1
-statsigapi.net = server:127.0.0.1
-szbdyd.com = server:127.0.0.1
-tagtic.cn = server:127.0.0.1
-telecome.cn = server:127.0.0.1
-ubixioe.com = server:127.0.0.1
-uhabo.com = server:127.0.0.1
-vlion.cn = server:127.0.0.1
-vungle.com = server:127.0.0.1
-wmzfylgdsz.com = server:127.0.0.1
-wuchuyun.com = server:127.0.0.1 # # 随机子域广告 CDN
-wwads.cn = server:127.0.0.1
-xinqiucc.com = server:127.0.0.1 # # 随机子域广告 CDN：sd-gl
-xlviiirdr.com = server:127.0.0.1
-xlviirdr.com = server:127.0.0.1
-xycdn.com = server:127.0.0.1
-ydycdn.com = server:127.0.0.1 # # 随机子域广告 CDN（12 个随机子域）
-yfanads.com = server:127.0.0.1
 zhangyuyidong.cn = server:127.0.0.1
+
+[Rule]
+# [Rule] DNS 层拦截：`DOMAIN/DOMAIN-SUFFIX + REJECT`，针对有 AAAA（IPv6）记录的域名——
+#   `server:127.0.0.1` 只拦 IPv4，IPv6 会逃逸，故这些域名用 [Rule] 完整拦截（DNS 层，不依赖 MITM）。
+#   清单：scripts/fanqie_aaaa_domains.txt（342 条）。
+DOMAIN,1500020991.vodplayer.wxamedia.com,REJECT
+DOMAIN,1500022744.vodplayer.wxamedia.com,REJECT
+DOMAIN,1500026601.vodplayer.wxamedia.com,REJECT
+DOMAIN,aaid.umeng.com,REJECT
+DOMAIN,ad.12306.cn,REJECT
+DOMAIN,ad.bn.netease.com,REJECT
+DOMAIN,ad.maoyan.com,REJECT
+DOMAIN,ad.qingting.fm,REJECT
+DOMAIN,ad.qq.com,REJECT
+DOMAIN,ad.tencentmusic.com,REJECT
+DOMAIN,ad.v3mh.com,REJECT
+DOMAIN,ad.zijieapi.com,REJECT
+DOMAIN,ad4.sina.com.cn,REJECT
+DOMAIN,adash-emas.cn-hangzhou.aliyuncs.com,REJECT
+DOMAIN,adashxgc.ut.taobao.com,REJECT
+DOMAIN-SUFFIX,adcanvas.com,REJECT
+DOMAIN,adclick.tencentmusic.com,REJECT
+DOMAIN,adexp.chinaliftoff.io,REJECT
+DOMAIN,ads-img-al.xhscdn.com,REJECT
+DOMAIN,ads-img-bak.xhscdn.com,REJECT
+DOMAIN,ads-img-qc.xhscdn.com,REJECT
+DOMAIN,ads-marketing-vivofs.vivo.com.cn,REJECT
+DOMAIN,ads-sdk-api.ranfenghd.com,REJECT
+DOMAIN,ads-video-al.xhscdn.com,REJECT
+DOMAIN,ads-vp5.xhscdn.com,REJECT
+DOMAIN,ads.cup.com.cn,REJECT
+DOMAIN,ads.service.kugou.com,REJECT
+DOMAIN,ads.v3mh.com,REJECT
+DOMAIN,ads3-normal-hl.zijieapi.com,REJECT
+DOMAIN,ads3-normal-lf.zijieapi.com,REJECT
+DOMAIN,ads3-normal-lq.zijieapi.com,REJECT
+DOMAIN,ads3-normal.zijieapi.com,REJECT
+DOMAIN,ads5-normal-hl.zijieapi.com,REJECT
+DOMAIN,ads5-normal-lf.zijieapi.com,REJECT
+DOMAIN,ads5-normal-lq.zijieapi.com,REJECT
+DOMAIN,ads5-normal.zijieapi.com,REJECT
+DOMAIN,adservice.google.com,REJECT
+DOMAIN,adserviceretry.kugou.com,REJECT
+DOMAIN,adsfile.bssdlbig.kugou.com,REJECT
+DOMAIN,adsfile.qq.com,REJECT
+DOMAIN,adsfilebssdlbig.ali.kugou.com,REJECT
+DOMAIN,adsfileretry.service.kugou.com,REJECT
+DOMAIN,adsfs.heytapimage.com,REJECT
+DOMAIN,adslvfile.qq.com,REJECT
+DOMAIN,adsmind.gdtimg.com,REJECT
+DOMAIN,adsmind.ugdtimg.com,REJECT
+DOMAIN,adsp.xunlei.com,REJECT
+DOMAIN,adstats.tencentmusic.com,REJECT
+DOMAIN,adstrategy.biz.weibo.com,REJECT
+DOMAIN,adstudio-assets.scdn.co,REJECT
+DOMAIN,adui.tg.meitu.com,REJECT
+DOMAIN,adx-drcn.op.dbankcloud.cn,REJECT
+DOMAIN,adxstatic.vivo.com.cn,REJECT
+DOMAIN,agn.aty.sohu.com,REJECT
+DOMAIN,ali-ad.a.yximgs.com,REJECT
+DOMAIN,ali-p2p-v2.pull.yximgs.com,REJECT
+DOMAIN,alltbcsp2p.baidu.com,REJECT
+DOMAIN,alog.umeng.com,REJECT
+DOMAIN,alogsus.umeng.com,REJECT
+DOMAIN,als.baidu.com,REJECT
+DOMAIN,analytics.pinterest.com,REJECT
+DOMAIN,android.bugly.qq.com,REJECT
+DOMAIN,ap.dongqiudi.com,REJECT
+DOMAIN,api.anythinktech.com,REJECT
+DOMAIN,api.e.kuaishou.com,REJECT
+DOMAIN,api.fu.xcultur.com,REJECT
+DOMAIN,api.jietuhb.com,REJECT
+DOMAIN,api.kingdata.ksyun.com,REJECT
+DOMAIN,apm-native.xiaohongshu.com,REJECT
+DOMAIN,appcfg.v.qq.com,REJECT
+DOMAIN,applog.zijieapi.com,REJECT
+DOMAIN,aspect-upush.umeng.com,REJECT
+DOMAIN,audid-api.taobao.com,REJECT
+DOMAIN,audid.umeng.com,REJECT
+DOMAIN,badjs.weixinbridge.com,REJECT
+DOMAIN,beacon-api.aliyuncs.com,REJECT
+DOMAIN,beaconcdn.qq.com,REJECT
+DOMAIN,bes-mtj.baidu.com,REJECT
+DOMAIN-SUFFIX,bianxian.com,REJECT
+DOMAIN,bootpreload.uve.weibo.com,REJECT
+DOMAIN,brandadsstatic.vivo.com.cn,REJECT
+DOMAIN,c2.gdt.qq.com,REJECT
+DOMAIN,canvas-cdn.gdt.qq.com,REJECT
+DOMAIN,cbjs.baidu.com,REJECT
+DOMAIN,ccs.umeng.com,REJECT
+DOMAIN,cdn-ad.wtzw.com,REJECT
+DOMAIN,cdn.aiclk.com,REJECT
+DOMAIN,cdn.ynuf.aliapp.org,REJECT
+DOMAIN,cfg.imtt.qq.com,REJECT
+DOMAIN,chat1.jd.com,REJECT
+DOMAIN,click.chinaliftoff.io,REJECT
+DOMAIN,click.liftoff.io,REJECT
+DOMAIN,clog.miguvideo.com,REJECT
+DOMAIN,cnlogs.umeng.com,REJECT
+DOMAIN,cnlogs.umengcloud.com,REJECT
+DOMAIN,cpro.baidustatic.com,REJECT
+DOMAIN,crash2.zhihu.com,REJECT
+DOMAIN,d.applovin.com,REJECT
+DOMAIN,da.anythinktech.com,REJECT
+DOMAIN,data-sdk-uuid-log.d.meituan.net,REJECT
+DOMAIN,datacollection.uve.weibo.com,REJECT
+DOMAIN,dm.toutiao.com,REJECT
+DOMAIN,dns.alidns.com,REJECT
+DOMAIN,dxp.baidu.com,REJECT
+DOMAIN,dyp2p-ali.douyucdn.cn,REJECT
+DOMAIN,eclick.baidu.com,REJECT
+DOMAIN,ef-dongfeng.tanx.com,REJECT
+DOMAIN,entry.baidu.com,REJECT
+DOMAIN,errlog.umeng.com,REJECT
+DOMAIN,errnewlog.umeng.com,REJECT
+DOMAIN,events-drcn.op.dbankcloud.cn,REJECT
+DOMAIN,fclog.baidu.com,REJECT
+DOMAIN,feed-image.baidu.com,REJECT
+DOMAIN,file.daihuo.qq.com,REJECT
+DOMAIN,firebaselogging-pa.googleapis.com,REJECT
+DOMAIN,fxgate.baidu.com,REJECT
+DOMAIN,g.cn.miaozhen.com,REJECT
+DOMAIN,g.dtv.cn.miaozhen.com,REJECT
+DOMAIN,g2.ganjing.world,REJECT
+DOMAIN,gdfp.gifshow.com,REJECT
+DOMAIN,googleads.g.doubleclick-cn.net,REJECT
+DOMAIN,grs.dbankcloud.com,REJECT
+DOMAIN,grs.hicloud.com,REJECT
+DOMAIN,gw5.push.mcp.weibo.cn,REJECT
+DOMAIN,h-adashx.ut.taobao.com,REJECT
+DOMAIN,h.trace.qq.com,REJECT
+DOMAIN,hc-ssp.sm.cn,REJECT
+DOMAIN,hm.baidu.com,REJECT
+DOMAIN,hmma.baidu.com,REJECT
+DOMAIN,huichuan-mc.sm.cn,REJECT
+DOMAIN,huichuan.sm.cn,REJECT
+DOMAIN,hw-p2p.pull.yximgs.com,REJECT
+DOMAIN,hwpub-s01-drcn.cloud.dbankcloud.cn,REJECT
+DOMAIN,iadmusicmat.music.126.net,REJECT
+DOMAIN,ifacelog.iqiyi.com,REJECT
+DOMAIN,ifs.tanx.com,REJECT
+DOMAIN,ii.gdt.qq.com,REJECT
+DOMAIN,image-ad.sm.cn,REJECT
+DOMAIN,img-c.heytapimage.com,REJECT
+DOMAIN,img-x.jd.com,REJECT
+DOMAIN,img2.360buyimg.com,REJECT
+DOMAIN,impression-asia.liftoff.io,REJECT
+DOMAIN,ixav-cse.avlyun.com,REJECT
+DOMAIN,kde.qq.com,REJECT
+DOMAIN,ks-p2p.pull.yximgs.com,REJECT
+DOMAIN,ks.pull.yximgs.com,REJECT
+DOMAIN,kwpush.kuwo.cn,REJECT
+DOMAIN,l2-toutiao-quic-ipv6-ml.gslb.ksyuncdn.com,REJECT
+DOMAIN,l6.fancyapi.com,REJECT
+DOMAIN,lf-event-manager.oceanengine.com,REJECT
+DOMAIN,lf3-ad-union-sdk.pglstatp-toutiao.com,REJECT
+DOMAIN,lf6-ad-union-sdk.pglstatp-toutiao.com,REJECT
+DOMAIN,lives.l.aiseet.atianqi.com,REJECT
+DOMAIN,livewebbs2pcdn.msstatic.com,REJECT
+DOMAIN,lng.xiaohongshu.com,REJECT
+DOMAIN,log-api.pangolin-sdk-toutiao-b.com,REJECT
+DOMAIN-SUFFIX,log-report.com,REJECT
+DOMAIN,log-upload-os.hoyoverse.com,REJECT
+DOMAIN,log.avlyun.com,REJECT
+DOMAIN,log.fc.yahoo.com,REJECT
+DOMAIN,log.ireader.com,REJECT
+DOMAIN,log.kuwo.cn,REJECT
+DOMAIN,log.pinterest.com,REJECT
+DOMAIN,log.stat.kugou.com,REJECT
+DOMAIN,log.tbs.qq.com,REJECT
+DOMAIN,log.web.kugou.com,REJECT
+DOMAIN,log.zijieapi.com,REJECT
+DOMAIN,log1.cmpassport.com,REJECT
+DOMAIN,log3-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 27 次
+DOMAIN,log5-applog-hl.fqnovel.com,REJECT
+DOMAIN,log5-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 136 次，最活跃
+DOMAIN,logbak.hicloud.com,REJECT
+DOMAIN,logrcv.aiclk.com,REJECT
+DOMAIN,logtj.kugou.com,REJECT
+DOMAIN,logupdate.avlyun.sec.miui.com,REJECT
+DOMAIN,logv2.ireader.com,REJECT
+DOMAIN,logwebs.kugou.com,REJECT
+DOMAIN,luimg.baidu.com,REJECT
+DOMAIN,m.atm.youku.com,REJECT
+DOMAIN,m1.ad.10010.com,REJECT
+DOMAIN,mapi.m.jd.com,REJECT
+DOMAIN,masdkv6.3g.qq.com,REJECT
+DOMAIN,mazu.m.qq.com,REJECT
+DOMAIN,mi.gdt.qq.com,REJECT
+DOMAIN,miav-cse.avlyun.com,REJECT
+DOMAIN,mini-prog-drm.vodplayvideo.net,REJECT
+DOMAIN,minigame3-normal-hl.zijieapi.com,REJECT
+DOMAIN,minigame3-normal-lf.zijieapi.com,REJECT
+DOMAIN,minigame3-normal-lq.zijieapi.com,REJECT
+DOMAIN,minigame5-normal-hl.zijieapi.com,REJECT
+DOMAIN,minigame5-normal-lf.zijieapi.com,REJECT
+DOMAIN,minigame5-normal-lq.zijieapi.com,REJECT
+DOMAIN,mlog.bigda.com,REJECT
+DOMAIN,mobads-pre-config.cdn.bcebos.com,REJECT
+DOMAIN,mobads.baidu.com,REJECT
+DOMAIN,mobilead.kuwo.cn,REJECT
+DOMAIN,mobilelog.kugou.com,REJECT
+DOMAIN,mon11-misc-hl.fqnovel.com,REJECT
+DOMAIN,mon11-misc-lf.fqnovel.com,REJECT # # 番茄杂项上报 实测 26 次
+DOMAIN,mon3-misc-lf.fqnovel.com,REJECT # # 番茄杂项上报 实测 2 次
+DOMAIN,monitor.music.qq.com,REJECT
+DOMAIN,monsetting.toutiao.com,REJECT
+DOMAIN,mpcfg.fancydsp.com,REJECT
+DOMAIN,ms.applovin.com,REJECT
+DOMAIN,mssdk.volces.com,REJECT
+DOMAIN,nadvideo2.baidu.com,REJECT
+DOMAIN,nsclick.baidu.com,REJECT
+DOMAIN,ogads-pa.clients6.google.com,REJECT
+DOMAIN,open.e.kuaishou.cn,REJECT
+DOMAIN,open.e.kuaishou.com,REJECT
+DOMAIN,openadapi.fancydsp.com,REJECT
+DOMAIN,optimus-ads.amap.com,REJECT
+DOMAIN,oss.cdn.aiclk.com,REJECT
+DOMAIN,ossnt-errlog.umeng.com,REJECT
+DOMAIN,outlookads.live.com,REJECT
+DOMAIN,p.l.qq.com,REJECT
+DOMAIN,p.s.360.cn,REJECT
+DOMAIN,p1-lm.adkwai.com,REJECT
+DOMAIN,p2-lm.adkwai.com,REJECT
+DOMAIN,p3-ad-sign.byteimg.com,REJECT
+DOMAIN,p3-be-pack-sign.pglstatp-toutiao.com,REJECT
+DOMAIN,p3-lm.adkwai.com,REJECT
+DOMAIN,p3-tt.byteimg.com,REJECT
+DOMAIN,p5-be-pack-sign.pglstatp-toutiao.com,REJECT
+DOMAIN,p6-ad-sign.byteimg.com,REJECT
+DOMAIN,p6-be-pack-sign.pglstatp-toutiao.com,REJECT
+DOMAIN,p66-ad.adkwai.com,REJECT
+DOMAIN,p9-ad-sign.byteimg.com,REJECT
+DOMAIN,pgdt.gtimg.cn,REJECT
+DOMAIN,pgdt.ugdtimg.com,REJECT
+DOMAIN,pica-a-display.diwodiwo.xyz,REJECT
+DOMAIN,pica-ad-api.diwodiwo.xyz,REJECT
+DOMAIN,plbslog.umeng.com,REJECT
+DOMAIN,pos.baidu.com,REJECT
+DOMAIN,public.gdtimg.com,REJECT
+DOMAIN,q.i.gdt.qq.com,REJECT
+DOMAIN,qn-cdnfile1pcdn.msstatic.com,REJECT
+DOMAIN,qqdata.ab.qq.com,REJECT
+DOMAIN,qzs.gdtimg.com,REJECT
+DOMAIN,recommend-drcn.hms.dbankcloud.cn,REJECT
+DOMAIN,report.tencentmusic.com,REJECT
+DOMAIN,resolve.umeng.com,REJECT
+DOMAIN,rms-drcn.platform.dbankcloud.cn,REJECT
+DOMAIN,roi.soulapp.cn,REJECT
+DOMAIN,rpt.gdt.qq.com,REJECT
+DOMAIN,rt.applovin.com,REJECT
+DOMAIN,rt.applvn.com,REJECT
+DOMAIN,rtlog3-applog-hl.fqnovel.com,REJECT
+DOMAIN,rtlog3-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 4 次
+DOMAIN,rtlog5-applog-hl.fqnovel.com,REJECT
+DOMAIN,rtlog5-applog-lf.fqnovel.com,REJECT # # 番茄埋点 实测 27 次
+DOMAIN,s.amazon-adsystem.com,REJECT
+DOMAIN,sdk-cache.video.ptqy.gitv.tv,REJECT
+DOMAIN,sdk.adx.adwangmai.com,REJECT
+DOMAIN,sdk.e.qq.com,REJECT
+DOMAIN,sdkapi.cloooud.com,REJECT
+DOMAIN,sdkapp.uve.weibo.com,REJECT
+DOMAIN,sdkreport.e.qq.com,REJECT
+DOMAIN,sf3-fe-tos.pglstatp-toutiao.com,REJECT
+DOMAIN,sf3-ttcdn-tos.pstatp.com,REJECT
+DOMAIN,shihuo-new.log.shihuocdn.cn,REJECT
+DOMAIN,shihuo.log.shihuocdn.cn,REJECT
+DOMAIN,slb-p2p.vcloud.ks-live.com,REJECT
+DOMAIN,smartad.10010.com,REJECT
+DOMAIN,snowflake.qq.com,REJECT
+DOMAIN,spider-tracker.xiaohongshu.com,REJECT
+DOMAIN,ssp.cloooud.com,REJECT
+DOMAIN,static-s.iqiyi.com,REJECT
+DOMAIN,statichf.shihuocdn.cn,REJECT
+DOMAIN,syh-imp.cdnjtzy.com,REJECT
+DOMAIN,t-adx.52qumao.com,REJECT
+DOMAIN,t-dsp.pinduoduo.com,REJECT
+DOMAIN,t1.a.market.xiaomi.com,REJECT
+DOMAIN,t2.a.market.xiaomi.com,REJECT
+DOMAIN,t3.a.market.xiaomi.com,REJECT
+DOMAIN,t7z.cupid.ptqy.gitv.tv,REJECT
+DOMAIN,tangram.e.qq.com,REJECT
+DOMAIN,target.ads.jihuoniao.com,REJECT
+DOMAIN,tencent-dtv.m.cn.miaozhen.com,REJECT
+DOMAIN,tk.anythinktech.com,REJECT
+DOMAIN,tmead.y.qq.com,REJECT
+DOMAIN,tmeadcomm.y.qq.com,REJECT
+DOMAIN,tmfmazu.m.qq.com,REJECT
+DOMAIN,tmfsdk.m.qq.com,REJECT
+DOMAIN,tnc3-aliec2.bytedance.com,REJECT
+DOMAIN,tnc3-aliec2.toutiaoapi.com,REJECT
+DOMAIN,tnc3-aliec2.zijieapi.com,REJECT
+DOMAIN,tnc3-alisc1.bytedance.com,REJECT
+DOMAIN,tnc3-alisc1.toutiaoapi.com,REJECT
+DOMAIN,tnc3-alisc1.zijieapi.com,REJECT
+DOMAIN,tnc3-bjlgy.bytedance.com,REJECT
+DOMAIN,tnc3-bjlgy.toutiaoapi.com,REJECT
+DOMAIN,tpc.googlesyndication-cn.com,REJECT
+DOMAIN,tracelog-debug.aiclk.com,REJECT
+DOMAIN,tracelog-debug.yunxish.com,REJECT
+DOMAIN,tx-ad.a.yximgs.com,REJECT
+DOMAIN,tx-kmpaudio.pull.yximgs.com,REJECT
+DOMAIN,tx-p2p-v2.pull.yximgs.com,REJECT
+DOMAIN,tytx.m.cn.miaozhen.com,REJECT
+DOMAIN,ulogs.umeng.com,REJECT
+DOMAIN,ulogs.umengcloud.com,REJECT
+DOMAIN,umini.shujupie.com,REJECT
+DOMAIN,union-mlog.bigda.com,REJECT
+DOMAIN,uranus.jd.com,REJECT
+DOMAIN,us.l.qq.com,REJECT
+DOMAIN,utoken.umeng.com,REJECT
+DOMAIN,v11-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v13-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v2.gdt.qq.com,REJECT
+DOMAIN,v2.reachmax.cn,REJECT
+DOMAIN,v26-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v2mi.gdt.qq.com,REJECT
+DOMAIN,v3.gdt.qq.com,REJECT
+DOMAIN,v5-bd-daily-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v5-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v5-se-sjy-daily-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v6-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v9-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v96-reading-ad.qznovelvod.com,REJECT
+DOMAIN,vd6.l.qq.com,REJECT
+DOMAIN,video-dsp.pddpic.com,REJECT
+DOMAIN,video.market.xiaomi.com,REJECT
+DOMAIN,w1.gskwai.com,REJECT
+DOMAIN,w1.kskwai.com,REJECT
+DOMAIN,watson.telemetry.microsoft.com,REJECT
+DOMAIN,weather-community-drcn.weather.dbankcloud.cn,REJECT
+DOMAIN,webcast5-open-hl.douyin.com,REJECT
+DOMAIN,webcast5-open-hl.douyin.com.c.dsa.cdnbuild.net,REJECT
+DOMAIN,webview.unityads.unity3d.com,REJECT
+DOMAIN,win.gdt.qq.com,REJECT
+DOMAIN,wxa.wxs.qq.com,REJECT
+DOMAIN,wxaintpcos.wxqcloud.qq.com.cn,REJECT
+DOMAIN,wximg.wxs.qq.com,REJECT
+DOMAIN,wxsmw.wxs.qq.com,REJECT
+DOMAIN,wxsnsdy.tc.qq.com,REJECT
+DOMAIN,wxsnsdy.wxs.qq.com,REJECT
+DOMAIN,wxsnsdythumb.wxs.qq.com,REJECT
+DOMAIN,xc.gdt.qq.com,REJECT
+DOMAIN,yumao.puata.info,REJECT
+DOMAIN,zhihu-web-analytics.zhihu.com,REJECT
+DOMAIN,zjres-ad.kajicam.com,REJECT
+DOMAIN,zxid-m.mobileservice.cn,REJECT
