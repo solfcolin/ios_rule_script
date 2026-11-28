@@ -11,8 +11,9 @@
         --output   Shadowrocket/module/FanQieNovel.module
 
 输入：三个 dnsmasq 风格配置文件（`address=/X/` 行，`#` 开头为注释）。
-输出：`[Host]` 段模块（全量 `域名 = server:127.0.0.1`，DNS 层拦截，不依赖 MITM）。
-      若指定 --output-qx，另生成 Quantumult X 分流文件（QX 无 `[Host]` 语法，仍用 DOMAIN / DOMAIN-SUFFIX + REJECT）。
+输出：`[Rule]` 段模块 —— 全量 DOMAIN / DOMAIN-SUFFIX + REJECT（DNS 层拦截，不依赖 MITM）。
+      完整主机名 → `DOMAIN,X,REJECT`（精确拦）；注册域 → `DOMAIN-SUFFIX,X,REJECT`（拦 X 及全部子域）。
+      若指定 --output-qx，另生成 Quantumult X 分流文件（与模块同源同规则集，同为 REJECT 形式）。
 
 版本规则：版本 = 规则集最后变化日期；规则集无变化保持原日期（幂等），有变化置为今天。
 """
@@ -48,22 +49,11 @@ def classify(domains):
     return exact, suffix
 
 
-# [Host] 全量黑洞（用户实测 2026-11-27 最终决策）：
-#   `server:127.0.0.1` 统一用于全部域名（含曾有 AAAA（IPv6）记录的域名）——用户验证后决定不再拆 [Rule]。
-#   注：早期 `X = 127.0.0.1` / `0.0.0.0` 纯 IP 写法实测不生效，必须 `server:` 前缀。
-#   回退预案：若真机发现 server:127.0.0.1 拦不住 IPv6（有 AAAA 的域名从 IPv6 逃逸），
-#   可把有 AAAA 的域名回退到 [Rule]（DOMAIN/DOMAIN-SUFFIX + REJECT）；需要时用
-#   `dig @114.114.114.114 +short AAAA <域名>` 重新解析哪些域名有 AAAA（此前实测 342/1020 有）。
-HOST_TARGET = "server:127.0.0.1"
-
-
-def split_by_ip_version(all_domains):
-    """全量统一进 [Host]（server:127.0.0.1）；[Rule] 段不再输出。
-
-    回退预案：若真机验证发现 server:127.0.0.1 拦不住 IPv6，改回
-    「有 AAAA → [Rule]，无 AAAA → [Host]」双段拆分即可（用 dig 重新解析生成清单）。
-    """
-    return set(all_domains), set()
+# 全量 [Rule] REJECT（用户 2026-11-28 决策，改回 [Rule]）：
+#   [Host] `server:127.0.0.1` 只拦 IPv4（A 记录），有 AAAA（IPv6）记录的域名会从 IPv6 逃逸
+#   （2026-11-27 实测 342/1020 条有 AAAA），且丢响应级语义；[Rule] REJECT 无此问题。
+#   历史实测坑（若再考虑 [Host]）：纯 IP 写法（`X = 127.0.0.1` / `0.0.0.0` / `::`）不生效，
+#   必须 `server:` 前缀（见 commit 8312968）。
 
 
 RULE_RE = re.compile(r"^(DOMAIN(?:-SUFFIX)?),([^,]+),REJECT\s*(?:#\s*(.*))?$")
@@ -103,16 +93,13 @@ def read_version(path):
     return None
 
 
-def build_module(host_domains, rule_domains, exact, suffix, version, annotations):
-    """产出全量 [Host] 段模块（含曾有 AAAA 的域名，统一 server:127.0.0.1）。
-
-    参数保留 rule_domains/exact/suffix 以兼容「回退双段拆分」预案；当前 rule_domains 恒为空。
-    """
-    total = len(host_domains)
+def build_module(exact, suffix, version, annotations):
+    """产出全量 [Rule] 段模块（DOMAIN 精确 / DOMAIN-SUFFIX 注册域 + REJECT）。"""
+    total = len(exact) + len(suffix)
     v = version
 
-    def host_line(d):
-        line = f"{d} = {HOST_TARGET}"
+    def rule_line(kind, d):
+        line = f"{kind},{d},REJECT"
         if d in annotations:
             line += f" # {annotations[d]}"
         return line
@@ -120,12 +107,13 @@ def build_module(host_domains, rule_domains, exact, suffix, version, annotations
     lines = [
         "#!name=番茄小说 @zqzess",
         f"#!desc=番茄小说/红果 DNS 广告屏蔽, version = {v}",
-        "#!desc=（[Host] DNS 层拦截，源自 home-dns-adblock/config）",
-        "[Host]",
-        "# [Host] DNS 层拦截：`域名 = server:127.0.0.1`，域名解析即指向本机回环、连接失败，不依赖 MITM。",
-        "#   用户实测：早期纯 IP 写法（`X = 127.0.0.1` / `0.0.0.0` / `::`）不生效，须 `server:` 前缀。",
-        "#   曾按 AAAA 拆 [Rule]（342 条有 IPv6），用户验证后决定全量统一 [Host]；",
-        "#   若真机发现 IPv6 逃逸，可据 scripts/fanqie_aaaa_domains.txt 回退有 AAAA 域名到 [Rule]。",
+        "#!desc=（[Rule] DNS 层拦截，源自 home-dns-adblock/config）",
+        "[Rule]",
+        "# 全部走 [Rule] DNS 层拦截，不依赖 [Host] 映射、不依赖 MITM。",
+        "#   完整广告主机名 → `DOMAIN,X,REJECT` 精确拦（如 ads3-normal-hl.zijieapi.com）。",
+        "#   注册域 → `DOMAIN-SUFFIX,X,REJECT` 拦 X 及全部子域（如 googleadservices.com）。",
+        "#   曾于 2026-11-27 全量改用 [Host] `server:127.0.0.1`，2026-11-28 改回 [Rule]：",
+        "#   server:127.0.0.1 只拦 IPv4（A 记录），有 AAAA（IPv6）记录的域名会逃逸（实测 342/1020 条有）。",
         "# 白名单（正片/图床/基础设施）已剔除（来源 whitelist）；`-reading-ad.qznovelvod.com` 广告视频子域故意保留（正片走 -reading-video）。",
         "# ═══════════════════════════════════════════",
         "# 来源：home-dns-adblock/config（adblock-upstream.conf + adblock-extra.conf + adblock-fq.conf）",
@@ -133,9 +121,12 @@ def build_module(host_domains, rule_domains, exact, suffix, version, annotations
         "# 上游广告规则（自动生成，勿手改）",
         "# 生成：GitHub Actions 定时任务（.github/workflows/sync-fanqie-module.yml）",
         f"# 条数：{total}（已过白名单过滤）",
+        f"# 精确 {len(exact)} 条 + 后缀 {len(suffix)} 条",
     ]
-    for d in sorted(host_domains):
-        lines.append(host_line(d))
+    for d in exact:
+        lines.append(rule_line("DOMAIN", d))
+    for d in suffix:
+        lines.append(rule_line("DOMAIN-SUFFIX", d))
     return "\n".join(lines) + "\n"
 
 
@@ -147,7 +138,7 @@ def build_qx_list(exact, suffix, version):
         f"# 生成时间：{version}（规则最后变化日；仅在规则集变化时重生成并更新）",
         "# 用法：Quantumult X「分流」-> 「引用规则」，作为 filter_remote 引入，REJECT 走 REJECT 策略组。",
         "#",
-        "# 上游广告规则（自动生成，勿手改；与 Shadowrocket 模块同源同规则集，QX 无 [Host] 语法故用 REJECT）",
+        "# 上游广告规则（自动生成，勿手改；与 Shadowrocket 模块同源同规则集，同为 DOMAIN/DOMAIN-SUFFIX + REJECT）",
         "# 生成：GitHub Actions 定时任务（.github/workflows/sync-fanqie-module.yml）",
         f"# 条数：{total}（{len(exact)} 精确 + {len(suffix)} 后缀）",
         "#",
@@ -188,27 +179,19 @@ def main():
             sys.exit(1)
 
     exact, suffix = classify(domains)
-    all_domains = set(exact) | set(suffix)
-    host_domains, rule_domains = split_by_ip_version(all_domains)
-    module_rules = set(f"HOST,{d}" for d in host_domains) | set(
-        f"{'DOMAIN' if d.count('.') >= 2 else 'DOMAIN-SUFFIX'},{d},REJECT" for d in rule_domains
-    )
-    qx_rules = set(f"DOMAIN,{d},REJECT" for d in exact) | set(
+    module_rules = set(f"DOMAIN,{d},REJECT" for d in exact) | set(
         f"DOMAIN-SUFFIX,{d},REJECT" for d in suffix
     )
 
-    # 模块（全量 [Host] DNS 拦截）
+    # 模块（全量 [Rule] DNS 拦截）
     old_rules, annotations = read_existing(args.output)
     version = resolve_version(args.output, module_rules)
     with open(args.output, "w", encoding="utf-8") as f:
-        f.write(build_module(host_domains, rule_domains, exact, suffix, version, annotations))
-    print(
-        f"模块：{len(host_domains)} 条 [Host] = {len(host_domains)} 条，version={version}"
-    )
+        f.write(build_module(exact, suffix, version, annotations))
 
-    # QX 分流文件（可选，各自独立跟踪版本）
+    # QX 分流文件（可选，各自独立跟踪版本；与模块同源同规则集，规则形式一致）
     if args.output_qx:
-        version_qx = resolve_version(args.output_qx, qx_rules)
+        version_qx = resolve_version(args.output_qx, module_rules)
         with open(args.output_qx, "w", encoding="utf-8") as f:
             f.write(build_qx_list(exact, suffix, version_qx))
         print(
@@ -217,7 +200,7 @@ def main():
         )
 
     print(
-        f"模块：{len(exact)} 精确 + {len(suffix)} 后缀 = {len(exact) + len(suffix)} 条，"
+        f"模块：{len(exact)} 精确 + {len(suffix)} 后缀 = {len(exact) + len(suffix)} 条 [Rule]，"
         f"version={version}"
     )
 

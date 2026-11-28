@@ -51,10 +51,9 @@ jobs:
 
       - name: 安全检查（防上游结构变化产出空规则）
         run: |
-          MOD_HOST="$(grep -cE '^[^#].* = server:127\.0\.0\.1' Shadowrocket/module/FanQieNovel.module)"
-          MOD_COUNT=$MOD_HOST
+          MOD_COUNT="$(grep -cE '^(DOMAIN|DOMAIN-SUFFIX),[^,]+,REJECT' Shadowrocket/module/FanQieNovel.module)"
           QX_COUNT="$(grep -cE '^(DOMAIN,|DOMAIN-SUFFIX,)' QuantumultX/FanQieNovel.list)"
-          echo "模块规则数: $MOD_COUNT（[Host]），QX 分流规则数: $QX_COUNT"
+          echo "模块规则数: $MOD_COUNT（[Rule]），QX 分流规则数: $QX_COUNT"
           if [ "$MOD_COUNT" -lt 100 ] || [ "$QX_COUNT" -lt 100 ]; then
             echo "::error::生成规则数异常偏少（模块 $MOD_COUNT / QX $QX_COUNT < 100），疑似上游格式变化，已中止提交（改动保留在工作区不推送）"
             exit 1

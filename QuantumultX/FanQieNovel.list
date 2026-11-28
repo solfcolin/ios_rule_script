@@ -2,7 +2,7 @@
 # 生成时间：2026-11-24（规则最后变化日；仅在规则集变化时重生成并更新）
 # 用法：Quantumult X「分流」-> 「引用规则」，作为 filter_remote 引入，REJECT 走 REJECT 策略组。
 #
-# 上游广告规则（自动生成，勿手改；与 Shadowrocket 模块同源同规则集，QX 无 [Host] 语法故用 REJECT）
+# 上游广告规则（自动生成，勿手改；与 Shadowrocket 模块同源同规则集，同为 DOMAIN/DOMAIN-SUFFIX + REJECT）
 # 生成：GitHub Actions 定时任务（.github/workflows/sync-fanqie-module.yml）
 # 条数：1020（951 精确 + 69 后缀）
 #

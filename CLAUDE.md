@@ -30,30 +30,28 @@ Shadowrocket 的 `[URL Rewrite]` 与 `URL-REGEX` **只有在该域名被 MITM �
 等）就是在解析域名之后、建立 TCP 连接之前拒绝，**不依赖 MITM**，也不走 `[URL Rewrite]`。这是 Shadowrocket
 最「底层」的拦截机制。
 
+**当前决策（2026-11-28）：`FanQieNovel.module` 全量走 `[Rule]`**——广告域名一律 `DOMAIN,X,REJECT`（完整主机名）
+或 `DOMAIN-SUFFIX,X,REJECT`（注册域及全部子域），不使用 `[Host]`。2026-11-27 曾短暂全量改用 `[Host]`，
+次日改回：其 `server:127.0.0.1` 只拦 IPv4（A 记录），有 AAAA（IPv6）记录的域名会从 IPv6 逃逸
+（实测 342/1020 有 AAAA，如 `ads3-normal-hl.zijieapi.com`），且丢失响应级语义。
+`QuantumultX/FanQieNovel.list` 同源同规则集，同为 `DOMAIN/DOMAIN-SUFFIX + REJECT`。
+文件由 `scripts/gen_fanqie_module.py` 自动生成（GitHub Actions 定时同步），**改动需同步改生成器**，否则被覆盖。
+
 **`[Host]` 段（`域名 = server:127.0.0.1`）是 Surge 语法，非 Shadowrocket 模块官方段**——官方无公开仓库/文档
 （`github.com/shadowrocket/Shadowrocket` 404）；类官方站 shadowrocket.vip 主页只讲规则与 URL Rewrite，不提
-`[Host]`；真实模块集合（deezertidal 200+ 个模块、blackmatrix7）均**零使用** `[Host]`。**但 3.43 起用户决策
-试引入，2026-11-27 起 FanQieNovel.module 全量改用此写法**：所有「纯 REJECT」域名统一映射到
-`server:127.0.0.1`，**不保留 `[Rule]` 段**（用户原话：当时不知道 DNS 拦截写法才用 `[Rule]`，现在知道了就全改）。
-**实测坑：纯 IP 写法（`X = 127.0.0.1` / `X = 0.0.0.0` / `::`）不生效，必须 `server:` 前缀**——
-FanQieNovel.module 曾因纯 IP 写法无效而整段迁回 `[Rule]`（见 commit 8312968）。
+`[Host]`；真实模块集合（deezertidal 200+ 个模块、blackmatrix7）均**零使用** `[Host]`。若今后再考虑引入，
+以下实测坑必须知道：
 
-**IPv6 逃逸说明（2026-11-27 实测）**：`server:127.0.0.1` 只拦 IPv4（A 记录），有 **AAAA（IPv6）** 记录的域名
-理论上会从 IPv6 逃逸（实测 342/1020 有 AAAA，如 `ads3-normal-hl.zijieapi.com`）。曾按此拆双段
-（无 AAAA→[Host]、有 AAAA→[Rule]），**用户验证后决定全量统一 [Host]**。回退预案：若真机发现 IPv6 逃逸，
-把有 AAAA 的域名回退到 `[Rule]`（`DOMAIN/DOMAIN-SUFFIX + REJECT`），用
-`dig @114.114.114.114 +short AAAA <域名>` 重新解析哪些有 AAAA。
-
-**真机验证本段是否生效**（请求记录里命中表现为「连接 127.0.0.1 失败」）；异常时把对应域名回退到 `[Rule]` REJECT。
-
+- 纯 IP 写法（`X = 127.0.0.1` / `X = 0.0.0.0` / `::`）不生效，必须 `server:` 前缀——
+  FanQieNovel.module 曾因纯 IP 写法无效而整段迁回 `[Rule]`（见 commit 8312968）。
+- `[Host]` 映射只等价于「连接失败」，**丢失** `REJECT-DICT` / `REJECT-200` / `REJECT-ARRAY` 的
+  响应级语义（部分 SDK 靠它们避免报错/重试循环），故这三类动作的域名**不可**用本写法。
 - `[Host]` 对注册域做「整域后缀匹配」（`domain.com` 匹配该域及全部子域），但**表达不了主机前缀通配**
   （`p?-novel.byteimg.com`、`p*.douyinpic.com`、`v5-se*-reading-video.qznovelvod.com`）——这类若出现，
   不得硬扩成 `*.byteimg.com`（会违反上面「共用 CDN 族禁止整域 REJECT」，连带屏蔽正常封面/头像/商品图），
   需按具体域名逐条列。
-- `[Host]` 映射 `server:127.0.0.1` 只等价于「连接失败」，**丢失** `REJECT-DICT` / `REJECT-200` / `REJECT-ARRAY` 的
-  响应级语义（部分 SDK 靠它们避免报错/重试循环），故这三类动作的域名**不可**用本写法。
-- Quantumult X 无 `[Host]` 段语法，`QuantumultX/FanQieNovel.list` 仍用 `DOMAIN/DOMAIN-SUFFIX + REJECT`
-  （同源同规则集，仅语法载体不同）。
+
+**真机验证拦截是否生效**：请求记录里命中表现为对应 `DOMAIN(-SUFFIX),X,REJECT` 规则。
 
 ## 规则编写原则
 
